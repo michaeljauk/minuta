@@ -1,7 +1,8 @@
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use hound::{WavSpec, WavWriter};
-use std::sync::{Arc, Mutex};
+use std::sync::{mpsc, Arc, Mutex};
 use std::path::PathBuf;
+use std::time::Duration;
 use tauri::{AppHandle, Manager};
 
 use crate::error::{AppError, Result};
@@ -30,8 +31,10 @@ pub async fn start_recording(app: AppHandle, state: tauri::State<'_, AppState>) 
 
     // Spawn audio capture in background
     let path_clone = path_str.clone();
+    let (done_tx, done_rx) = mpsc::channel::<()>();
+    rec.done_rx = Some(done_rx);
     std::thread::spawn(move || {
-        if let Err(e) = capture_audio(path_clone) {
+        if let Err(e) = capture_audio(path_clone, done_tx) {
             eprintln!("Audio capture error: {e}");
         }
     });
@@ -41,21 +44,30 @@ pub async fn start_recording(app: AppHandle, state: tauri::State<'_, AppState>) 
 
 #[tauri::command]
 pub fn stop_recording(state: tauri::State<'_, AppState>) -> Result<String> {
-    let mut rec = state.recording.lock().map_err(|e| AppError::Audio(e.to_string()))?;
-    if !rec.is_recording {
-        return Err(AppError::Audio("Not recording".to_string()));
+    let (path, done_rx) = {
+        let mut rec = state.recording.lock().map_err(|e| AppError::Audio(e.to_string()))?;
+        if !rec.is_recording {
+            return Err(AppError::Audio("Not recording".to_string()));
+        }
+        rec.is_recording = false;
+        let path = rec.audio_path.clone().unwrap_or_default();
+        // Signal the capture thread to stop
+        if !path.is_empty() {
+            let stop_file = format!("{path}.stop");
+            let _ = std::fs::write(&stop_file, b"");
+        }
+        (path, rec.done_rx.take())
+    };
+
+    // Wait for the capture thread to finalize the WAV before returning
+    if let Some(rx) = done_rx {
+        let _ = rx.recv_timeout(Duration::from_secs(10));
     }
-    rec.is_recording = false;
-    let path = rec.audio_path.clone().unwrap_or_default();
-    // Signal the capture thread to stop
-    if !path.is_empty() {
-        let stop_file = format!("{path}.stop");
-        let _ = std::fs::write(&stop_file, b"");
-    }
+
     Ok(path)
 }
 
-fn capture_audio(output_path: String) -> std::result::Result<(), Box<dyn std::error::Error>> {
+fn capture_audio(output_path: String, done_tx: mpsc::Sender<()>) -> std::result::Result<(), Box<dyn std::error::Error>> {
     let host = cpal::default_host();
     let device = host.default_input_device()
         .ok_or("No input device available")?;
@@ -136,5 +148,6 @@ fn capture_audio(output_path: String) -> std::result::Result<(), Box<dyn std::er
         }
     }
 
+    let _ = done_tx.send(());
     Ok(())
 }

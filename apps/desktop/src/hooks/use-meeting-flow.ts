@@ -12,6 +12,7 @@ export function useMeetingFlow() {
   const [savedNote, setSavedNote] = useState<SaveNoteResult | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number>(0);
+  const isProcessingRef = useRef(false);
 
   const startRecording = async () => {
     try {
@@ -32,6 +33,9 @@ export function useMeetingFlow() {
   };
 
   const stopAndProcess = async (title: string = "Meeting") => {
+    if (isProcessingRef.current) return;
+    isProcessingRef.current = true;
+
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
@@ -75,6 +79,8 @@ export function useMeetingFlow() {
     } catch (e) {
       setStatus("error");
       setError(String(e));
+    } finally {
+      isProcessingRef.current = false;
     }
   };
 

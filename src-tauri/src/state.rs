@@ -1,9 +1,10 @@
-use std::sync::Mutex;
+use std::sync::{mpsc, Mutex};
 
-#[derive(Debug, Default)]
+#[derive(Default)]
 pub struct RecordingState {
     pub is_recording: bool,
     pub audio_path: Option<String>,
+    pub done_rx: Option<mpsc::Receiver<()>>,
 }
 
 pub struct AppState {
