@@ -37,7 +37,7 @@ curl -L https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin 
 ### Prerequisites
 
 - [Rust](https://rustup.rs) (stable)
-- [Node.js](https://nodejs.org) 20+
+- [Node.js](https://nodejs.org) 24+ — use [nvm](https://github.com/nvm-sh/nvm): `nvm install && nvm use` (reads `.nvmrc`)
 - [pnpm](https://pnpm.io) 10+
 - Tauri v2 CLI: `cargo install tauri-cli --version "^2"`
 
