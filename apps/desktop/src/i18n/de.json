@@ -1,0 +1,63 @@
+{
+  "app": {
+    "title": "Minuta"
+  },
+  "nav": {
+    "home": "Start",
+    "settings": "Einstellungen"
+  },
+  "home": {
+    "startRecording": "Aufnahme starten",
+    "stopRecording": "Aufnahme stoppen",
+    "recentNotes": "Letzte Notizen",
+    "noNotes": "Noch keine Besprechungen aufgezeichnet.",
+    "recording": "Aufnahme läuft..."
+  },
+  "processing": {
+    "transcribing": "Audio wird transkribiert...",
+    "summarizing": "Zusammenfassung wird erstellt...",
+    "saving": "Notiz wird gespeichert...",
+    "completed": "Notiz gespeichert!",
+    "error": "Ein Fehler ist aufgetreten"
+  },
+  "note": {
+    "openInObsidian": "In Obsidian öffnen",
+    "summary": "Zusammenfassung",
+    "keyDecisions": "Wichtige Entscheidungen",
+    "actionItems": "Aufgaben",
+    "transcript": "Transkript"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "vaultPath": "Vault-Pfad",
+    "vaultPathPlaceholder": "Obsidian-Vault-Ordner auswählen",
+    "browse": "Durchsuchen",
+    "outputFolder": "Ausgabeordner",
+    "outputFolderPlaceholder": "meetings",
+    "whisperModel": "Whisper-Modell",
+    "ollamaUrl": "Ollama-Basis-URL",
+    "ollamaModel": "Ollama-Modell",
+    "openaiKey": "OpenAI API-Schlüssel (optionaler Fallback)",
+    "anthropicKey": "Anthropic API-Schlüssel (optionaler Fallback)",
+    "wikilinkAttendees": "Wikilinks für Teilnehmer",
+    "wikilinkAttendeesDesc": "Teilnehmernamen in [[doppelte Klammern]] einschließen",
+    "transcriptMode": "Transkript in der Ausgabe",
+    "transcriptAlways": "Immer",
+    "transcriptNever": "Nie",
+    "transcriptCollapsed": "Eingeklappt (Standard)",
+    "language": "Sprache",
+    "save": "Einstellungen speichern",
+    "saved": "Einstellungen gespeichert!",
+    "modelTiny": "tiny (schnell, weniger genau)",
+    "modelBase": "base (empfohlen)",
+    "modelSmall": "small (langsamer, genauer)",
+    "modelLargeV3": "large-v3 (am genauesten)"
+  },
+  "errors": {
+    "noVaultPath": "Bitte legen Sie Ihren Obsidian-Vault-Pfad in den Einstellungen fest.",
+    "recordingFailed": "Aufnahme konnte nicht gestartet werden.",
+    "transcriptionFailed": "Transkription fehlgeschlagen.",
+    "summarizationFailed": "Zusammenfassung fehlgeschlagen. Läuft Ollama?",
+    "saveFailed": "Notiz konnte nicht gespeichert werden."
+  }
+}

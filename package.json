@@ -1,0 +1,28 @@
+{
+  "name": "minuta",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first AI meeting note taker for Obsidian",
+  "license": "FSL-1.1-Apache-2.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "desktop:dev": "pnpm --filter @minuta/desktop dev",
+    "desktop:build": "pnpm --filter @minuta/desktop build",
+    "tauri:dev": "cd src-tauri && cargo tauri dev",
+    "tauri:build": "cd src-tauri && cargo tauri build"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0",
+    "typescript": "^5.8.0"
+  },
+  "packageManager": "pnpm@10.29.3",
+  "engines": {
+    "node": ">=20"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  }
+}
