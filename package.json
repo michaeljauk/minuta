@@ -11,6 +11,7 @@
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
     "format:check": "biome format --check .",
+    "test": "turbo run test",
     "typecheck": "turbo run typecheck",
     "desktop:dev": "pnpm --filter @minuta/desktop dev",
     "desktop:build": "pnpm --filter @minuta/desktop build",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.7",
+    "vitest": "^3.0.0",
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
     "lefthook": "^2.1.4",

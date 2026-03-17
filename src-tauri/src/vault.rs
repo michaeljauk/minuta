@@ -170,3 +170,68 @@ fn sanitize_filename(name: &str) -> String {
         .trim()
         .to_string()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // --- sanitize_filename ---
+
+    #[test]
+    fn sanitize_filename_replaces_forbidden_characters() {
+        assert_eq!(sanitize_filename("a/b\\c:d*e?f\"g<h>i|j"), "a_b_c_d_e_f_g_h_i_j");
+    }
+
+    #[test]
+    fn sanitize_filename_leaves_safe_characters_unchanged() {
+        assert_eq!(sanitize_filename("Q4 Review – final"), "Q4 Review – final");
+    }
+
+    #[test]
+    fn sanitize_filename_truncates_to_50_characters() {
+        let long = "a".repeat(60);
+        let result = sanitize_filename(&long);
+        assert_eq!(result.len(), 50);
+    }
+
+    #[test]
+    fn sanitize_filename_trims_trailing_whitespace() {
+        assert_eq!(sanitize_filename("hello   "), "hello");
+    }
+
+    // --- parse_ai_output ---
+
+    #[test]
+    fn parse_ai_output_extracts_all_three_sections() {
+        let input = "## Summary\nGreat meeting.\n## Key Decisions\n- Ship v2\n## Action Items\n- [ ] Write tests (Alice)\n---";
+        let (summary, decisions, actions) = parse_ai_output(input);
+        assert_eq!(summary, "Great meeting.");
+        assert_eq!(decisions, "- Ship v2");
+        assert_eq!(actions, "- [ ] Write tests (Alice)");
+    }
+
+    #[test]
+    fn parse_ai_output_returns_none_identified_for_empty_sections() {
+        let input = "## Summary\nBrief update.\n## Key Decisions\n## Action Items\n---";
+        let (summary, decisions, actions) = parse_ai_output(input);
+        assert_eq!(summary, "Brief update.");
+        assert_eq!(decisions, "None identified.");
+        assert_eq!(actions, "None identified.");
+    }
+
+    #[test]
+    fn parse_ai_output_ignores_content_outside_sections() {
+        let input = "Preamble text\n## Summary\nActual summary.\n## Key Decisions\n- Decision one\n## Action Items\n- [ ] Do thing\n---\nTrailing noise";
+        let (summary, decisions, _) = parse_ai_output(input);
+        assert_eq!(summary, "Actual summary.");
+        assert_eq!(decisions, "- Decision one");
+    }
+
+    #[test]
+    fn parse_ai_output_handles_empty_input() {
+        let (summary, decisions, actions) = parse_ai_output("");
+        assert!(summary.is_empty());
+        assert_eq!(decisions, "None identified.");
+        assert_eq!(actions, "None identified.");
+    }
+}
