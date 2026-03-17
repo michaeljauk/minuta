@@ -1,81 +1,93 @@
-import { Button } from "@minuta/ui";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { EmptyState } from "../components/empty-state";
+import { MeetingList } from "../components/meeting-list";
 import { NotePreview } from "../components/note-preview";
-import { ProcessingStatus } from "../components/processing-status";
-import { RecordButton } from "../components/record-button";
-import { RecordingTimer } from "../components/recording-timer";
-import { useMeetingFlow } from "../hooks/use-meeting-flow";
+import { RecordingCard } from "../components/recording-card";
+import type { useMeetingFlow } from "../hooks/use-meeting-flow";
+import type { NoteMetadata } from "../lib/tauri-commands";
 
-export function HomePage() {
+interface HomePageProps {
+  notes: NoteMetadata[];
+  isLoading: boolean;
+  meetingFlow: ReturnType<typeof useMeetingFlow>;
+  onSelectNote: (note: NoteMetadata) => void;
+}
+
+export function HomePage({ notes, isLoading, meetingFlow, onSelectNote }: HomePageProps) {
   const { t } = useTranslation();
-  const { status, duration, error, savedNote, startRecording, stopAndProcess, reset } =
-    useMeetingFlow();
-  const [meetingTitle, setMeetingTitle] = useState("Meeting");
+  const { status, duration, error, savedNote, reset } = meetingFlow;
+  const [meetingTitle, setMeetingTitle] = useState(t("home.meetingTitle"));
 
-  const isProcessing = ["transcribing", "summarizing", "saving"].includes(status);
   const isRecording = status === "recording";
+  const isProcessing = ["transcribing", "summarizing", "saving"].includes(status);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-8 py-12">
-      {/* Title input when idle */}
-      {status === "idle" && (
-        <input
-          value={meetingTitle}
-          onChange={(e) => setMeetingTitle(e.target.value)}
-          className="w-64 text-center text-lg font-medium bg-transparent border-b border-border focus:outline-none focus:border-primary pb-1"
-          placeholder="Meeting title..."
-        />
-      )}
+    <div className="flex flex-col h-full">
+      {/* Page heading */}
+      <h1 className="text-2xl font-semibold tracking-tight px-8 pt-8 pb-4">{t("home.title")}</h1>
 
-      {/* Recording timer */}
-      {isRecording && (
-        <div className="flex flex-col items-center gap-2">
-          <p className="text-sm text-muted-foreground animate-pulse">{t("home.recording")}</p>
-          <RecordingTimer duration={duration} />
-        </div>
-      )}
-
-      {/* Record button */}
-      {(status === "idle" || isRecording) && (
-        <RecordButton
+      {/* Recording / Processing card */}
+      {(isRecording || isProcessing) && (
+        <RecordingCard
           status={status}
-          onStart={startRecording}
-          onStop={() => stopAndProcess(meetingTitle)}
+          duration={duration}
+          meetingTitle={meetingTitle}
+          onTitleChange={setMeetingTitle}
+          onStop={() => meetingFlow.stopAndProcess(meetingTitle)}
         />
       )}
-
-      {/* Processing steps */}
-      {isProcessing && <ProcessingStatus status={status} />}
 
       {/* Completed note */}
       {status === "completed" && savedNote && (
-        <div className="flex flex-col items-center gap-4">
-          <p className="text-sm text-green-600 dark:text-green-400 font-medium">
-            {t("processing.completed")}
-          </p>
-          <NotePreview note={savedNote} />
-          <Button
-            variant="outline"
-            onClick={() => {
-              reset();
-              setMeetingTitle("Meeting");
-            }}
-          >
-            {t("home.startRecording")} {t("nav.home").toLowerCase()}
-          </Button>
+        <div className="mx-8 mb-6 rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="flex flex-col items-center gap-3">
+            <p className="text-sm font-medium text-green-600 dark:text-green-400">
+              {t("processing.completed")}
+            </p>
+            <NotePreview note={savedNote} />
+            <button
+              type="button"
+              onClick={() => {
+                reset();
+                setMeetingTitle(t("home.meetingTitle"));
+              }}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {t("home.startRecording")}
+            </button>
+          </div>
         </div>
       )}
 
       {/* Error */}
       {status === "error" && error && (
-        <div className="flex flex-col items-center gap-3">
+        <div className="mx-8 mb-6 rounded-2xl border border-destructive/30 bg-destructive/5 p-5">
           <p className="text-sm text-destructive">{error}</p>
-          <Button variant="outline" onClick={reset}>
-            Try again
-          </Button>
+          <button
+            type="button"
+            onClick={reset}
+            className="mt-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {t("home.startRecording")}
+          </button>
         </div>
       )}
+
+      {/* Meeting list */}
+      <div className="px-8 pb-8 flex flex-col gap-6 flex-1">
+        {isLoading ? (
+          <div className="flex flex-col gap-2">
+            {["s1", "s2", "s3", "s4"].map((id) => (
+              <div key={id} className="h-12 animate-pulse rounded-xl bg-muted" />
+            ))}
+          </div>
+        ) : notes.length > 0 ? (
+          <MeetingList notes={notes} onSelectNote={onSelectNote} />
+        ) : (
+          <EmptyState />
+        )}
+      </div>
     </div>
   );
 }

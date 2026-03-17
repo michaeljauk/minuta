@@ -1,58 +1,98 @@
-import { Button } from "@minuta/ui";
-import { Home, Moon, Settings, Sun } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { SettingsProvider } from "./context/settings-context";
+import { useCallback, useEffect, useState } from "react";
+import { Sidebar } from "./components/sidebar";
+import { TopBar } from "./components/top-bar";
+import { SettingsProvider, useSettings } from "./context/settings-context";
+import { useMeetingFlow } from "./hooks/use-meeting-flow";
+import { useNotes } from "./hooks/use-notes";
+import type { NoteMetadata } from "./lib/tauri-commands";
 import { HomePage } from "./pages/home";
+import { NoteDetailPage } from "./pages/note-detail";
 import { SettingsPage } from "./pages/settings";
 import "./i18n";
 
-type Page = "home" | "settings";
+type Page = "home" | "settings" | "note";
 
 function AppShell() {
-  const { t } = useTranslation();
+  const { settings, updateSettings } = useSettings();
   const [page, setPage] = useState<Page>("home");
-  const [dark, setDark] = useState(() => window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const [selectedNote, setSelectedNote] = useState<NoteMetadata | null>(null);
+  const meetingFlow = useMeetingFlow();
+  const { notes, isLoading, refresh } = useNotes();
+
+  // Resolve effective dark mode from persisted theme setting
+  const resolvedDark =
+    settings.theme === "system"
+      ? window.matchMedia("(prefers-color-scheme: dark)").matches
+      : settings.theme === "dark";
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-  }, [dark]);
+    document.documentElement.classList.toggle("dark", resolvedDark);
+  }, [resolvedDark]);
+
+  const toggleDark = useCallback(async () => {
+    const nextTheme = resolvedDark ? "light" : "dark";
+    await updateSettings({ ...settings, theme: nextTheme });
+  }, [resolvedDark, settings, updateSettings]);
+
+  const handleNavigate = useCallback((p: "home" | "settings") => {
+    setPage(p);
+    setSelectedNote(null);
+  }, []);
+
+  const handleSelectNote = useCallback((note: NoteMetadata) => {
+    setSelectedNote(note);
+    setPage("note");
+  }, []);
+
+  const handleNoteDeleted = useCallback(() => {
+    setPage("home");
+    setSelectedNote(null);
+    refresh();
+  }, [refresh]);
+
+  // Refresh notes list after a recording completes
+  useEffect(() => {
+    if (meetingFlow.status === "completed") {
+      refresh();
+    }
+  }, [meetingFlow.status, refresh]);
 
   return (
-    <div className="flex h-screen flex-col bg-background text-foreground">
-      {/* Header */}
-      <header className="flex items-center justify-between border-b px-4 py-3">
-        <div className="flex items-center gap-1">
-          <Button
-            variant={page === "home" ? "secondary" : "ghost"}
-            size="sm"
-            onClick={() => setPage("home")}
-            className="gap-2"
-          >
-            <Home className="h-4 w-4" />
-            {t("nav.home")}
-          </Button>
-          <Button
-            variant={page === "settings" ? "secondary" : "ghost"}
-            size="sm"
-            onClick={() => setPage("settings")}
-            className="gap-2"
-          >
-            <Settings className="h-4 w-4" />
-            {t("nav.settings")}
-          </Button>
+    <div className="flex h-screen overflow-hidden bg-sidebar text-foreground">
+      <Sidebar
+        page={page === "note" ? "home" : page}
+        onNavigate={handleNavigate}
+        recentNotes={notes}
+        isLoading={isLoading}
+        onSelectNote={handleSelectNote}
+      />
+      <main className="flex-1 flex flex-col bg-background overflow-hidden">
+        <TopBar
+          dark={resolvedDark}
+          onToggleDark={toggleDark}
+          status={meetingFlow.status}
+          duration={meetingFlow.duration}
+          onStartRecording={meetingFlow.startRecording}
+          onStopRecording={() => meetingFlow.stopAndProcess()}
+        />
+        <div className="flex-1 overflow-y-auto">
+          {page === "home" && (
+            <HomePage
+              notes={notes}
+              isLoading={isLoading}
+              meetingFlow={meetingFlow}
+              onSelectNote={handleSelectNote}
+            />
+          )}
+          {page === "note" && selectedNote && (
+            <NoteDetailPage
+              note={selectedNote}
+              onBack={() => handleNavigate("home")}
+              onDeleted={handleNoteDeleted}
+            />
+          )}
+          {page === "settings" && <SettingsPage />}
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-muted-foreground">{t("app.title")}</span>
-          <Button variant="ghost" size="icon" onClick={() => setDark((d) => !d)}>
-            {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </Button>
-        </div>
-      </header>
-
-      {/* Content */}
-      <main className="flex-1 overflow-hidden">
-        {page === "home" ? <HomePage /> : <SettingsPage />}
       </main>
     </div>
   );

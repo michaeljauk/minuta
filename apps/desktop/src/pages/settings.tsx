@@ -1,4 +1,3 @@
-import { ScrollArea } from "@minuta/ui";
 import { useTranslation } from "react-i18next";
 import { SettingsForm } from "../components/settings-form";
 
@@ -6,15 +5,9 @@ export function SettingsPage() {
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="border-b p-4">
-        <h1 className="text-lg font-semibold">{t("settings.title")}</h1>
-      </div>
-      <ScrollArea className="flex-1 p-4">
-        <div className="max-w-lg mx-auto">
-          <SettingsForm />
-        </div>
-      </ScrollArea>
+    <div className="max-w-xl mx-auto px-8 py-8 flex flex-col gap-8">
+      <h1 className="text-2xl font-semibold tracking-tight">{t("settings.title")}</h1>
+      <SettingsForm />
     </div>
   );
 }

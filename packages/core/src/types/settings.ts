@@ -4,6 +4,8 @@ export type WhisperModel = "tiny" | "base" | "small" | "large-v3";
 
 export type AppLanguage = "en" | "de";
 
+export type AppTheme = "system" | "light" | "dark";
+
 export interface AppSettings {
   vaultPath: string;
   outputFolder: string;
@@ -15,6 +17,7 @@ export interface AppSettings {
   wikilinkAttendees: boolean;
   transcriptMode: TranscriptMode;
   language: AppLanguage;
+  theme: AppTheme;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -26,4 +29,5 @@ export const DEFAULT_SETTINGS: AppSettings = {
   wikilinkAttendees: true,
   transcriptMode: "collapsed",
   language: "en",
+  theme: "light",
 };

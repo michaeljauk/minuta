@@ -8,6 +8,7 @@ export type {
 export type {
   AppLanguage,
   AppSettings,
+  AppTheme,
   WhisperModel,
 } from "./settings";
 export { DEFAULT_SETTINGS } from "./settings";
