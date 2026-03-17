@@ -24,6 +24,16 @@ export interface SaveNoteResult {
   relative_path: string;
 }
 
+export interface NoteMetadata {
+  title: string;
+  date: string;
+  time: string;
+  durationMinutes: number;
+  filePath: string;
+  relativePath: string;
+  vaultName: string;
+}
+
 export const tauriCommands = {
   startRecording: (): Promise<string> => invoke("start_recording"),
 
@@ -41,6 +51,13 @@ export const tauriCommands = {
     invoke("summarize_transcript", { transcript, language, ollamaUrl, ollamaModel }),
 
   saveNote: (request: SaveNoteRequest): Promise<SaveNoteResult> => invoke("save_note", { request }),
+
+  listNotes: (vaultPath: string, outputFolder: string): Promise<NoteMetadata[]> =>
+    invoke("list_notes", { vaultPath, outputFolder }),
+
+  readNote: (filePath: string): Promise<string> => invoke("read_note", { filePath }),
+
+  deleteNote: (filePath: string): Promise<void> => invoke("delete_note", { filePath }),
 
   loadSettings: (): Promise<AppSettings> => invoke("load_settings"),
 

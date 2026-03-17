@@ -1,13 +1,18 @@
 import { FileText, Lock } from "lucide-react";
-import type { NoteMetadata } from "../hooks/use-notes";
+import type { NoteMetadata } from "../lib/tauri-commands";
 
 interface MeetingRowProps {
   note: NoteMetadata;
+  onClick: (note: NoteMetadata) => void;
 }
 
-export function MeetingRow({ note }: MeetingRowProps) {
+export function MeetingRow({ note, onClick }: MeetingRowProps) {
   return (
-    <div className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-muted/60 cursor-pointer transition-colors duration-150">
+    <button
+      type="button"
+      onClick={() => onClick(note)}
+      className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-muted/60 cursor-pointer transition-colors duration-150 w-full text-left"
+    >
       <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
         <FileText className="w-4 h-4 text-muted-foreground" />
       </div>
@@ -17,6 +22,6 @@ export function MeetingRow({ note }: MeetingRowProps) {
       </div>
       <span className="text-xs tabular-nums text-muted-foreground shrink-0">{note.time}</span>
       <Lock className="w-3.5 h-3.5 text-muted-foreground/50 shrink-0" />
-    </div>
+    </button>
   );
 }

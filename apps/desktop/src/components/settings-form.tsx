@@ -157,6 +157,22 @@ export function SettingsForm() {
       <div className="rounded-xl border border-border bg-card p-6 flex flex-col gap-4">
         <h2 className="text-sm font-semibold text-foreground">{t("settings.general")}</h2>
         <div className="flex flex-col gap-2">
+          <Label>{t("settings.theme")}</Label>
+          <Select
+            value={local.theme}
+            onValueChange={(v) => update({ theme: v as AppSettings["theme"] })}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="light">{t("settings.themeLight")}</SelectItem>
+              <SelectItem value="dark">{t("settings.themeDark")}</SelectItem>
+              <SelectItem value="system">{t("settings.themeSystem")}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex flex-col gap-2">
           <Label>{t("settings.language")}</Label>
           <Select
             value={local.language}

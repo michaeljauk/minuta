@@ -5,15 +5,16 @@ import { MeetingList } from "../components/meeting-list";
 import { NotePreview } from "../components/note-preview";
 import { RecordingCard } from "../components/recording-card";
 import type { useMeetingFlow } from "../hooks/use-meeting-flow";
-import type { NoteMetadata } from "../hooks/use-notes";
+import type { NoteMetadata } from "../lib/tauri-commands";
 
 interface HomePageProps {
   notes: NoteMetadata[];
   isLoading: boolean;
   meetingFlow: ReturnType<typeof useMeetingFlow>;
+  onSelectNote: (note: NoteMetadata) => void;
 }
 
-export function HomePage({ notes, isLoading, meetingFlow }: HomePageProps) {
+export function HomePage({ notes, isLoading, meetingFlow, onSelectNote }: HomePageProps) {
   const { t } = useTranslation();
   const { status, duration, error, savedNote, reset } = meetingFlow;
   const [meetingTitle, setMeetingTitle] = useState(t("home.meetingTitle"));
@@ -82,7 +83,7 @@ export function HomePage({ notes, isLoading, meetingFlow }: HomePageProps) {
             ))}
           </div>
         ) : notes.length > 0 ? (
-          <MeetingList notes={notes} />
+          <MeetingList notes={notes} onSelectNote={onSelectNote} />
         ) : (
           <EmptyState />
         )}

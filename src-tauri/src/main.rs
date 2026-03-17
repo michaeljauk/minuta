@@ -18,6 +18,9 @@ fn main() {
             transcribe_audio,
             summarize_transcript,
             save_note,
+            list_notes,
+            read_note,
+            delete_note,
             load_settings,
             save_settings,
         ])

@@ -1,10 +1,11 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import type { NoteMetadata } from "../hooks/use-notes";
+import type { NoteMetadata } from "../lib/tauri-commands";
 import { MeetingRow } from "./meeting-row";
 
 interface MeetingListProps {
   notes: NoteMetadata[];
+  onSelectNote: (note: NoteMetadata) => void;
 }
 
 function formatDateHeader(dateStr: string, todayStr: string, t: (key: string) => string): string {
@@ -22,7 +23,7 @@ function formatDateHeader(dateStr: string, todayStr: string, t: (key: string) =>
   });
 }
 
-export function MeetingList({ notes }: MeetingListProps) {
+export function MeetingList({ notes, onSelectNote }: MeetingListProps) {
   const { t } = useTranslation();
 
   const grouped = useMemo(() => {
@@ -49,7 +50,11 @@ export function MeetingList({ notes }: MeetingListProps) {
           </p>
           <div className="flex flex-col">
             {dateNotes.map((note) => (
-              <MeetingRow key={`${note.date}-${note.time}-${note.title}`} note={note} />
+              <MeetingRow
+                key={`${note.date}-${note.time}-${note.title}`}
+                note={note}
+                onClick={onSelectNote}
+              />
             ))}
           </div>
         </div>

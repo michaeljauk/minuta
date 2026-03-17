@@ -38,6 +38,16 @@
     "actionItems": "Aufgaben",
     "transcript": "Transkript"
   },
+  "noteDetail": {
+    "minutes": "Min.",
+    "local": "Lokal",
+    "copyTranscript": "Transkript kopieren",
+    "copied": "Kopiert!",
+    "delete": "Löschen",
+    "confirmDelete": "Löschen bestätigen",
+    "cancel": "Abbrechen",
+    "loadError": "Notiz konnte nicht geladen werden."
+  },
   "settings": {
     "title": "Einstellungen",
     "vaultPath": "Vault-Pfad",
@@ -67,7 +77,11 @@
     "aiModels": "KI-Modelle",
     "apiKeys": "API-Schlüssel",
     "output": "Ausgabe",
-    "general": "Allgemein"
+    "general": "Allgemein",
+    "theme": "Design",
+    "themeLight": "Hell",
+    "themeDark": "Dunkel",
+    "themeSystem": "System"
   },
   "errors": {
     "noVaultPath": "Bitte legen Sie Ihren Obsidian-Vault-Pfad in den Einstellungen fest.",

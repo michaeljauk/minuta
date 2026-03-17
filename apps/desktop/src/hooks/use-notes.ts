@@ -1,57 +1,37 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useSettings } from "../context/settings-context";
+import type { NoteMetadata } from "../lib/tauri-commands";
+import { tauriCommands } from "../lib/tauri-commands";
 
-export interface NoteMetadata {
-  title: string;
-  date: string;
-  time: string;
-  duration_minutes: number;
-  file_path: string;
-  relative_path: string;
-  vault_name: string;
-}
-
-// TODO: replace with real Tauri command `invoke("list_notes")`
-const MOCK_NOTES: NoteMetadata[] = [
-  {
-    title: "Daily Standup",
-    date: "2026-03-17",
-    time: "13:30",
-    duration_minutes: 15,
-    file_path: "",
-    relative_path: "",
-    vault_name: "",
-  },
-  {
-    title: "Refinement Meeting",
-    date: "2026-03-17",
-    time: "12:17",
-    duration_minutes: 45,
-    file_path: "",
-    relative_path: "",
-    vault_name: "",
-  },
-  {
-    title: "Product Review",
-    date: "2026-03-14",
-    time: "10:00",
-    duration_minutes: 60,
-    file_path: "",
-    relative_path: "",
-    vault_name: "",
-  },
-];
+export type { NoteMetadata } from "../lib/tauri-commands";
 
 export function useNotes() {
-  const [notes] = useState<NoteMetadata[]>(MOCK_NOTES);
-  const [isLoading] = useState(false);
+  const { settings, isLoading: settingsLoading } = useSettings();
+  const [notes, setNotes] = useState<NoteMetadata[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const addNote = useCallback(
-    (note: NoteMetadata) => {
-      // TODO: refresh from real Tauri command when implemented
-      notes.unshift(note);
-    },
-    [notes],
-  );
+  const refresh = useCallback(async () => {
+    if (!settings.vaultPath) {
+      setNotes([]);
+      setIsLoading(false);
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const result = await tauriCommands.listNotes(settings.vaultPath, settings.outputFolder);
+      setNotes(result);
+    } catch {
+      setNotes([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [settings.vaultPath, settings.outputFolder]);
 
-  return { notes, isLoading, addNote };
+  useEffect(() => {
+    if (!settingsLoading) {
+      refresh();
+    }
+  }, [settingsLoading, refresh]);
+
+  return { notes, isLoading: isLoading || settingsLoading, refresh };
 }

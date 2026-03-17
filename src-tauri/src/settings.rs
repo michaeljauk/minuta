@@ -18,6 +18,12 @@ pub struct AppSettings {
     pub wikilink_attendees: bool,
     pub transcript_mode: String,
     pub language: String,
+    #[serde(default = "default_theme")]
+    pub theme: String,
+}
+
+fn default_theme() -> String {
+    "light".to_string()
 }
 
 impl Default for AppSettings {
@@ -33,6 +39,7 @@ impl Default for AppSettings {
             wikilink_attendees: true,
             transcript_mode: "collapsed".to_string(),
             language: "en".to_string(),
+            theme: "light".to_string(),
         }
     }
 }

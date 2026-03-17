@@ -1,7 +1,7 @@
 import { cn } from "@minuta/ui";
 import { FileText, Home, Search, Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import type { NoteMetadata } from "../hooks/use-notes";
+import type { NoteMetadata } from "../lib/tauri-commands";
 
 type Page = "home" | "settings";
 
@@ -10,9 +10,10 @@ interface SidebarProps {
   onNavigate: (page: Page) => void;
   recentNotes: NoteMetadata[];
   isLoading: boolean;
+  onSelectNote: (note: NoteMetadata) => void;
 }
 
-export function Sidebar({ page, onNavigate, recentNotes, isLoading }: SidebarProps) {
+export function Sidebar({ page, onNavigate, recentNotes, isLoading, onSelectNote }: SidebarProps) {
   const { t } = useTranslation();
 
   return (
@@ -69,7 +70,8 @@ export function Sidebar({ page, onNavigate, recentNotes, isLoading }: SidebarPro
                 <button
                   type="button"
                   key={`${note.date}-${note.time}-${note.title}`}
-                  className="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-foreground hover:bg-accent/60 transition-colors duration-150 cursor-pointer"
+                  onClick={() => onSelectNote(note)}
+                  className="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-foreground hover:bg-accent/60 transition-colors duration-150 cursor-pointer text-left"
                 >
                   <FileText className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                   <span className="truncate">{note.title}</span>

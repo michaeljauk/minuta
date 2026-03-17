@@ -5,6 +5,113 @@ use std::path::PathBuf;
 
 use crate::error::{AppError, Result};
 
+#[derive(Debug, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct NoteMetadata {
+    pub title: String,
+    pub date: String,
+    pub time: String,
+    pub duration_minutes: u32,
+    pub file_path: String,
+    pub relative_path: String,
+    pub vault_name: String,
+}
+
+#[tauri::command]
+pub fn list_notes(vault_path: String, output_folder: String) -> Result<Vec<NoteMetadata>> {
+    let vault = PathBuf::from(&vault_path);
+    let output_dir = vault.join(&output_folder);
+
+    if !output_dir.exists() {
+        return Ok(Vec::new());
+    }
+
+    let vault_name = vault
+        .file_name()
+        .map(|n| n.to_string_lossy().to_string())
+        .unwrap_or_else(|| "vault".to_string());
+
+    let mut notes: Vec<NoteMetadata> = Vec::new();
+
+    let entries = fs::read_dir(&output_dir).map_err(|e| AppError::Vault(e.to_string()))?;
+    for entry in entries {
+        let entry = entry.map_err(|e| AppError::Vault(e.to_string()))?;
+        let path = entry.path();
+        if path.extension().is_some_and(|ext| ext == "md") {
+            if let Some(meta) = parse_note_frontmatter(&path, &output_folder, &vault_name) {
+                notes.push(meta);
+            }
+        }
+    }
+
+    // Sort by date desc, then time desc
+    notes.sort_by(|a, b| b.date.cmp(&a.date).then_with(|| b.time.cmp(&a.time)));
+
+    Ok(notes)
+}
+
+#[tauri::command]
+pub fn read_note(file_path: String) -> Result<String> {
+    fs::read_to_string(&file_path).map_err(|e| AppError::Vault(e.to_string()))
+}
+
+#[tauri::command]
+pub fn delete_note(file_path: String) -> Result<()> {
+    fs::remove_file(&file_path).map_err(|e| AppError::Vault(e.to_string()))
+}
+
+fn parse_note_frontmatter(
+    path: &PathBuf,
+    output_folder: &str,
+    vault_name: &str,
+) -> Option<NoteMetadata> {
+    let content = fs::read_to_string(path).ok()?;
+
+    // Check for YAML frontmatter
+    if !content.starts_with("---") {
+        return None;
+    }
+
+    let end = content[3..].find("---")?;
+    let frontmatter = &content[3..3 + end];
+
+    let mut title = String::new();
+    let mut date = String::new();
+    let mut time = String::new();
+    let mut duration_minutes: u32 = 0;
+
+    for line in frontmatter.lines() {
+        let line = line.trim();
+        if let Some(val) = line.strip_prefix("title:") {
+            title = val.trim().trim_matches('"').to_string();
+        } else if let Some(val) = line.strip_prefix("date:") {
+            date = val.trim().to_string();
+        } else if let Some(val) = line.strip_prefix("time:") {
+            time = val.trim().to_string();
+        } else if let Some(val) = line.strip_prefix("duration:") {
+            duration_minutes = val.trim().parse().unwrap_or(0);
+        }
+    }
+
+    if title.is_empty() && date.is_empty() {
+        return None;
+    }
+
+    let filename = path.file_name()?.to_string_lossy().to_string();
+    let relative_path = format!("{}/{}", output_folder, filename);
+    let file_path = path.to_string_lossy().to_string();
+
+    Some(NoteMetadata {
+        title,
+        date,
+        time,
+        duration_minutes,
+        file_path,
+        relative_path,
+        vault_name: vault_name.to_string(),
+    })
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SaveNoteRequest {
     pub vault_path: String,
@@ -42,11 +149,7 @@ pub fn save_note(request: SaveNoteRequest) -> Result<SaveNoteResult> {
     let file_path = output_dir.join(&filename);
     let relative_path = format!("{}/{}", request.output_folder, filename);
 
-    let content = build_note_content(
-        &request,
-        &date_str,
-        &time_str,
-    );
+    let content = build_note_content(&request, &date_str, &time_str);
 
     fs::write(&file_path, content).map_err(|e| AppError::Vault(e.to_string()))?;
 
@@ -87,10 +190,7 @@ language: {language}
 
     let transcript_section = match req.transcript_mode.as_str() {
         "never" => String::new(),
-        "always" => format!(
-            "\n# Transcript\n\n{}\n",
-            req.transcript
-        ),
+        "always" => format!("\n# Transcript\n\n{}\n", req.transcript),
         _ => format!(
             "\n# Transcript\n\n<details>\n<summary>Full transcript</summary>\n\n{}\n</details>\n",
             req.transcript
@@ -179,7 +279,10 @@ mod tests {
 
     #[test]
     fn sanitize_filename_replaces_forbidden_characters() {
-        assert_eq!(sanitize_filename("a/b\\c:d*e?f\"g<h>i|j"), "a_b_c_d_e_f_g_h_i_j");
+        assert_eq!(
+            sanitize_filename("a/b\\c:d*e?f\"g<h>i|j"),
+            "a_b_c_d_e_f_g_h_i_j"
+        );
     }
 
     #[test]

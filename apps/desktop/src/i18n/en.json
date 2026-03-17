@@ -38,6 +38,16 @@
     "actionItems": "Action Items",
     "transcript": "Transcript"
   },
+  "noteDetail": {
+    "minutes": "min",
+    "local": "Local",
+    "copyTranscript": "Copy transcript",
+    "copied": "Copied!",
+    "delete": "Delete",
+    "confirmDelete": "Confirm delete",
+    "cancel": "Cancel",
+    "loadError": "Failed to load note."
+  },
   "settings": {
     "title": "Settings",
     "vaultPath": "Vault Path",
@@ -67,7 +77,11 @@
     "aiModels": "AI Models",
     "apiKeys": "API Keys",
     "output": "Output",
-    "general": "General"
+    "general": "General",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System"
   },
   "errors": {
     "noVaultPath": "Please set your Obsidian vault path in Settings.",
