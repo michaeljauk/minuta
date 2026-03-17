@@ -1,0 +1,63 @@
+{
+  "app": {
+    "title": "Minuta"
+  },
+  "nav": {
+    "home": "Home",
+    "settings": "Settings"
+  },
+  "home": {
+    "startRecording": "Start Recording",
+    "stopRecording": "Stop Recording",
+    "recentNotes": "Recent Notes",
+    "noNotes": "No meetings recorded yet.",
+    "recording": "Recording..."
+  },
+  "processing": {
+    "transcribing": "Transcribing audio...",
+    "summarizing": "Generating summary...",
+    "saving": "Saving note...",
+    "completed": "Note saved!",
+    "error": "An error occurred"
+  },
+  "note": {
+    "openInObsidian": "Open in Obsidian",
+    "summary": "Summary",
+    "keyDecisions": "Key Decisions",
+    "actionItems": "Action Items",
+    "transcript": "Transcript"
+  },
+  "settings": {
+    "title": "Settings",
+    "vaultPath": "Vault Path",
+    "vaultPathPlaceholder": "Select your Obsidian vault folder",
+    "browse": "Browse",
+    "outputFolder": "Output Folder",
+    "outputFolderPlaceholder": "meetings",
+    "whisperModel": "Whisper Model",
+    "ollamaUrl": "Ollama Base URL",
+    "ollamaModel": "Ollama Model",
+    "openaiKey": "OpenAI API Key (optional fallback)",
+    "anthropicKey": "Anthropic API Key (optional fallback)",
+    "wikilinkAttendees": "Wikilink Attendees",
+    "wikilinkAttendeesDesc": "Wrap attendee names in [[double brackets]]",
+    "transcriptMode": "Transcript in Output",
+    "transcriptAlways": "Always",
+    "transcriptNever": "Never",
+    "transcriptCollapsed": "Collapsed (default)",
+    "language": "Language",
+    "save": "Save Settings",
+    "saved": "Settings saved!",
+    "modelTiny": "tiny (fast, less accurate)",
+    "modelBase": "base (recommended)",
+    "modelSmall": "small (slower, more accurate)",
+    "modelLargeV3": "large-v3 (most accurate)"
+  },
+  "errors": {
+    "noVaultPath": "Please set your Obsidian vault path in Settings.",
+    "recordingFailed": "Recording failed to start.",
+    "transcriptionFailed": "Transcription failed.",
+    "summarizationFailed": "Summarization failed. Is Ollama running?",
+    "saveFailed": "Failed to save note."
+  }
+}
