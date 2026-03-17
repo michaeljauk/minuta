@@ -1,6 +1,4 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { open } from "@tauri-apps/plugin-dialog";
+import type { AppSettings } from "@minuta/core";
 import {
   Button,
   Input,
@@ -10,10 +8,12 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Switch,
   Separator,
+  Switch,
 } from "@minuta/ui";
-import type { AppSettings } from "@minuta/core";
+import { open } from "@tauri-apps/plugin-dialog";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSettings } from "../context/settings-context";
 
 export function SettingsForm() {
@@ -22,8 +22,7 @@ export function SettingsForm() {
   const [local, setLocal] = useState<AppSettings>(settings);
   const [saved, setSaved] = useState(false);
 
-  const update = (patch: Partial<AppSettings>) =>
-    setLocal((s) => ({ ...s, ...patch }));
+  const update = (patch: Partial<AppSettings>) => setLocal((s) => ({ ...s, ...patch }));
 
   const browseVault = async () => {
     const selected = await open({ directory: true, multiple: false });
@@ -173,9 +172,7 @@ export function SettingsForm() {
         </Select>
       </div>
 
-      <Button onClick={handleSave}>
-        {saved ? t("settings.saved") : t("settings.save")}
-      </Button>
+      <Button onClick={handleSave}>{saved ? t("settings.saved") : t("settings.save")}</Button>
     </div>
   );
 }

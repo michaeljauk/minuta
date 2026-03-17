@@ -1,9 +1,4 @@
-import type {
-  OllamaConfig,
-  GenerateRequest,
-  GenerateResponse,
-  ListModelsResponse,
-} from "./types";
+import type { GenerateRequest, GenerateResponse, ListModelsResponse, OllamaConfig } from "./types";
 
 export class OllamaClient {
   private baseUrl: string;
@@ -28,9 +23,7 @@ export class OllamaClient {
     });
 
     if (!response.ok) {
-      throw new Error(
-        `Ollama API error: ${response.status} ${response.statusText}`
-      );
+      throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
     }
 
     const data = (await response.json()) as GenerateResponse;
@@ -41,9 +34,7 @@ export class OllamaClient {
     const response = await fetch(`${this.baseUrl}/api/tags`);
 
     if (!response.ok) {
-      throw new Error(
-        `Ollama API error: ${response.status} ${response.statusText}`
-      );
+      throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
     }
 
     return (await response.json()) as ListModelsResponse;

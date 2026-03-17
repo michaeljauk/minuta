@@ -1,7 +1,7 @@
+import { Button } from "@minuta/ui";
+import { Home, Moon, Settings, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Home, Settings, Moon, Sun } from "lucide-react";
-import { Button } from "@minuta/ui";
 import { SettingsProvider } from "./context/settings-context";
 import { HomePage } from "./pages/home";
 import { SettingsPage } from "./pages/settings";
@@ -12,9 +12,7 @@ type Page = "home" | "settings";
 function AppShell() {
   const { t } = useTranslation();
   const [page, setPage] = useState<Page>("home");
-  const [dark, setDark] = useState(() =>
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  );
+  const [dark, setDark] = useState(() => window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
@@ -45,14 +43,8 @@ function AppShell() {
           </Button>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-sm font-semibold text-muted-foreground">
-            {t("app.title")}
-          </span>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setDark((d) => !d)}
-          >
+          <span className="text-sm font-semibold text-muted-foreground">{t("app.title")}</span>
+          <Button variant="ghost" size="icon" onClick={() => setDark((d) => !d)}>
             {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
         </div>

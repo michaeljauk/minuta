@@ -1,6 +1,6 @@
-import { Mic, Square } from "lucide-react";
-import { cn } from "@minuta/ui";
 import type { MeetingStatus } from "@minuta/core";
+import { cn } from "@minuta/ui";
+import { Mic, Square } from "lucide-react";
 
 interface RecordButtonProps {
   status: MeetingStatus;
@@ -14,6 +14,7 @@ export function RecordButton({ status, onStart, onStop }: RecordButtonProps) {
 
   return (
     <button
+      type="button"
       onClick={isRecording ? onStop : onStart}
       disabled={isProcessing || status === "completed"}
       className={cn(
@@ -21,7 +22,7 @@ export function RecordButton({ status, onStart, onStop }: RecordButtonProps) {
         isRecording
           ? "bg-red-500 hover:bg-red-600 focus:ring-red-500 shadow-lg shadow-red-500/30 animate-pulse"
           : "bg-primary hover:bg-primary/90 focus:ring-primary shadow-lg",
-        (isProcessing || status === "completed") && "opacity-50 cursor-not-allowed"
+        (isProcessing || status === "completed") && "opacity-50 cursor-not-allowed",
       )}
     >
       {isRecording ? (

@@ -1,11 +1,11 @@
+import { Button } from "@minuta/ui";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { NotePreview } from "../components/note-preview";
+import { ProcessingStatus } from "../components/processing-status";
 import { RecordButton } from "../components/record-button";
 import { RecordingTimer } from "../components/recording-timer";
-import { ProcessingStatus } from "../components/processing-status";
-import { NotePreview } from "../components/note-preview";
 import { useMeetingFlow } from "../hooks/use-meeting-flow";
-import { Button } from "@minuta/ui";
 
 export function HomePage() {
   const { t } = useTranslation();
@@ -31,9 +31,7 @@ export function HomePage() {
       {/* Recording timer */}
       {isRecording && (
         <div className="flex flex-col items-center gap-2">
-          <p className="text-sm text-muted-foreground animate-pulse">
-            {t("home.recording")}
-          </p>
+          <p className="text-sm text-muted-foreground animate-pulse">{t("home.recording")}</p>
           <RecordingTimer duration={duration} />
         </div>
       )}
@@ -57,7 +55,13 @@ export function HomePage() {
             {t("processing.completed")}
           </p>
           <NotePreview note={savedNote} />
-          <Button variant="outline" onClick={() => { reset(); setMeetingTitle("Meeting"); }}>
+          <Button
+            variant="outline"
+            onClick={() => {
+              reset();
+              setMeetingTitle("Meeting");
+            }}
+          >
             {t("home.startRecording")} {t("nav.home").toLowerCase()}
           </Button>
         </div>

@@ -1,7 +1,7 @@
-import { useTranslation } from "react-i18next";
-import { ExternalLink } from "lucide-react";
 import { Button } from "@minuta/ui";
 import { open } from "@tauri-apps/plugin-shell";
+import { ExternalLink } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { SaveNoteResult } from "../lib/tauri-commands";
 
 interface NotePreviewProps {

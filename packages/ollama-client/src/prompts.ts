@@ -1,7 +1,4 @@
-export function buildMeetingSummaryPrompt(
-  transcript: string,
-  detectedLanguage: string
-): string {
+export function buildMeetingSummaryPrompt(transcript: string, detectedLanguage: string): string {
   return `You are a professional meeting notes assistant. Based on the following transcript, generate structured meeting notes.
 
 Respond in ${detectedLanguage} (same language as the transcript).

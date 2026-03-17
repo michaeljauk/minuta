@@ -1,5 +1,5 @@
-import { invoke } from "@tauri-apps/api/core";
 import type { AppSettings } from "@minuta/core";
+import { invoke } from "@tauri-apps/api/core";
 
 export interface TranscriptionResult {
   text: string;
@@ -36,15 +36,13 @@ export const tauriCommands = {
     transcript: string,
     language: string,
     ollamaUrl: string,
-    ollamaModel: string
+    ollamaModel: string,
   ): Promise<string> =>
     invoke("summarize_transcript", { transcript, language, ollamaUrl, ollamaModel }),
 
-  saveNote: (request: SaveNoteRequest): Promise<SaveNoteResult> =>
-    invoke("save_note", { request }),
+  saveNote: (request: SaveNoteRequest): Promise<SaveNoteResult> => invoke("save_note", { request }),
 
   loadSettings: (): Promise<AppSettings> => invoke("load_settings"),
 
-  saveSettings: (settings: AppSettings): Promise<void> =>
-    invoke("save_settings", { settings }),
+  saveSettings: (settings: AppSettings): Promise<void> => invoke("save_settings", { settings }),
 };

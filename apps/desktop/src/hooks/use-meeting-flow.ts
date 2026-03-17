@@ -1,8 +1,8 @@
-import { useState, useRef } from "react";
 import type { MeetingStatus } from "@minuta/core";
-import { tauriCommands } from "../lib/tauri-commands";
-import type { SaveNoteResult } from "../lib/tauri-commands";
+import { useRef, useState } from "react";
 import { useSettings } from "../context/settings-context";
+import type { SaveNoteResult } from "../lib/tauri-commands";
+import { tauriCommands } from "../lib/tauri-commands";
 
 export function useMeetingFlow() {
   const { settings } = useSettings();
@@ -45,10 +45,7 @@ export function useMeetingFlow() {
 
       // Transcribe
       setStatus("transcribing");
-      const transcription = await tauriCommands.transcribeAudio(
-        audioPath,
-        settings.whisperModel
-      );
+      const transcription = await tauriCommands.transcribeAudio(audioPath, settings.whisperModel);
 
       // Summarize
       setStatus("summarizing");
@@ -56,7 +53,7 @@ export function useMeetingFlow() {
         transcription.text,
         transcription.language,
         settings.ollamaBaseUrl,
-        settings.ollamaModel
+        settings.ollamaModel,
       );
 
       // Save

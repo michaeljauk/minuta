@@ -1,17 +1,14 @@
 export type {
-  MeetingNote,
   ActionItem,
-  MeetingStatus,
   MeetingConfig,
+  MeetingNote,
+  MeetingStatus,
   RecordingState,
 } from "./meeting";
-
-export type { VaultConfig, OutputSettings, TranscriptMode } from "./vault";
-
 export type {
-  WhisperModel,
   AppLanguage,
   AppSettings,
+  WhisperModel,
 } from "./settings";
-
 export { DEFAULT_SETTINGS } from "./settings";
+export type { OutputSettings, TranscriptMode, VaultConfig } from "./vault";

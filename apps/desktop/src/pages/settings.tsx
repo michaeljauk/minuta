@@ -1,5 +1,5 @@
-import { useTranslation } from "react-i18next";
 import { ScrollArea } from "@minuta/ui";
+import { useTranslation } from "react-i18next";
 import { SettingsForm } from "../components/settings-form";
 
 export function SettingsPage() {

@@ -13,6 +13,7 @@
     "./globals.css": "./src/globals.css"
   },
   "scripts": {
+    "lint": "biome check .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

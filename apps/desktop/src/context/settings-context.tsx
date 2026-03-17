@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
 import type { AppSettings } from "@minuta/core";
 import { DEFAULT_SETTINGS } from "@minuta/core";
+import type React from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { tauriCommands } from "../lib/tauri-commands";
 
 interface SettingsContextValue {

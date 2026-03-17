@@ -1,7 +1,7 @@
-import { useTranslation } from "react-i18next";
-import { Check, Loader2 } from "lucide-react";
-import { cn } from "@minuta/ui";
 import type { MeetingStatus } from "@minuta/core";
+import { cn } from "@minuta/ui";
+import { Check, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ProcessingStatusProps {
   status: MeetingStatus;
@@ -33,7 +33,7 @@ export function ProcessingStatus({ status }: ProcessingStatusProps) {
                 "flex h-6 w-6 items-center justify-center rounded-full text-xs",
                 isDone && "bg-green-500 text-white",
                 isActive && "bg-primary text-primary-foreground",
-                !isDone && !isActive && "bg-muted text-muted-foreground"
+                !isDone && !isActive && "bg-muted text-muted-foreground",
               )}
             >
               {isDone ? (
@@ -49,7 +49,7 @@ export function ProcessingStatus({ status }: ProcessingStatusProps) {
                 "text-sm",
                 isActive && "font-medium text-foreground",
                 isDone && "text-muted-foreground line-through",
-                !isDone && !isActive && "text-muted-foreground"
+                !isDone && !isActive && "text-muted-foreground",
               )}
             >
               {t(labelKey)}
