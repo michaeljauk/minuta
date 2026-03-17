@@ -50,14 +50,15 @@ pnpm install
 ### Run the desktop app
 
 ```sh
-pnpm desktop:dev
+bash dev.sh
 ```
 
-Or via Tauri directly:
+`dev.sh` is the canonical dev launcher. It:
+- Locates the Homebrew LLVM installation and exports `LIBCLANG_PATH` + prepends LLVM to `PATH` — required at compile time by `whisper-rs` (which uses `bindgen` to generate Rust bindings for Whisper.cpp)
+- Starts Ollama in the background if it isn't already running
+- Then executes `cargo tauri dev`
 
-```sh
-pnpm tauri:dev
-```
+**Do not use `pnpm tauri:dev` directly** — it skips the LLVM env setup and the build will fail with a `libclang not found` error unless you've already exported those vars in your shell session.
 
 ### Build for production
 

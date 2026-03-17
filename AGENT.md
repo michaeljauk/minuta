@@ -78,17 +78,21 @@ Agent guidance for the Minuta codebase. Read this before making any changes.
 ### Starting development
 ```sh
 pnpm install                   # install all workspaces
-pnpm desktop:dev               # start Tauri + Vite dev server
+bash dev.sh                    # start Tauri + Vite dev server (canonical)
 ```
+
+**Why `dev.sh` and not `pnpm tauri:dev`?**
+`whisper-rs` uses `bindgen` to generate Rust→C++ bindings for Whisper.cpp at compile time. `bindgen` requires `libclang`, which on macOS comes from Homebrew LLVM — not the system Clang. `dev.sh` exports `LIBCLANG_PATH` and prepends LLVM to `PATH` before invoking `cargo tauri dev`. It also starts Ollama if it isn't already running. Skipping it causes a `libclang not found` compile error.
 
 ### Useful scripts
 ```sh
-pnpm desktop:dev               # Vite on :1420 + Tauri watcher
+bash dev.sh                    # canonical dev start (LLVM env + Ollama guard + tauri dev)
 pnpm desktop:build             # production build (Vite + cargo)
-pnpm tauri:dev                 # alternative direct tauri invocation
 pnpm typecheck                 # type-check all packages
 pnpm lint                      # lint all packages
 ```
+
+> `pnpm tauri:dev` / `pnpm desktop:dev` work only if `LIBCLANG_PATH` and the LLVM `bin/` directory are already exported in your shell session. Prefer `dev.sh`.
 
 ### Running a single package script
 ```sh
@@ -125,13 +129,18 @@ src-tauri/src/
 - Errors flow through `AppError` → serialized to JSON → propagated to frontend
 
 **Tauri commands available to JS:**
+
+<!-- sync:begin:tauri-commands -->
 ```
-start_recording, stop_recording
-transcribe_audio
-summarize_transcript
+load_settings
 save_note
-load_settings, save_settings
+save_settings
+start_recording
+stop_recording
+summarize_transcript
+transcribe_audio
 ```
+<!-- sync:end:tauri-commands -->
 
 **File locations at runtime:**
 - Recordings: `{app_data_dir}/recording_YYYYMMDD_HHMMSS.wav`
@@ -226,15 +235,22 @@ Transcript inclusion is controlled by the `transcript_mode` setting: `never`, `a
 
 ## Settings Reference
 
-| Key | Type | Default | Notes |
-|---|---|---|---|
-| `vault_path` | string | — | Required — path to Obsidian vault root |
-| `output_folder` | string | `"Meetings"` | Subfolder inside vault |
-| `whisper_model` | enum | `"base"` | tiny / base / small / large-v3 |
-| `ollama_url` | string | `http://localhost:11434` | Ollama base URL |
-| `ollama_model` | string | `"llama3"` | Model name as known by Ollama |
-| `transcript_mode` | enum | `"collapsed"` | never / always / collapsed |
-| `language` | string | `"en"` | UI language (en/de) |
+> Auto-generated from `AppSettings` in `src-tauri/src/settings.rs`. Run `bash scripts/sync-docs.sh` (or commit — lefthook does it automatically) to regenerate after struct changes.
+
+<!-- sync:begin:settings -->
+| Key | Type | Default |
+|---|---|---|
+| `vault_path` | `String` | `""` |
+| `output_folder` | `String` | `"meetings"` |
+| `whisper_model` | `String` | `"base"` |
+| `ollama_base_url` | `String` | `"http://localhost:11434"` |
+| `ollama_model` | `String` | `"llama3"` |
+| `openai_api_key` | `Option<String>` | `None` |
+| `anthropic_api_key` | `Option<String>` | `None` |
+| `wikilink_attendees` | `bool` | `true` |
+| `transcript_mode` | `String` | `"collapsed"` |
+| `language` | `String` | `"en"` |
+<!-- sync:end:settings -->
 
 ---
 
@@ -266,8 +282,48 @@ Transcript inclusion is controlled by the `transcript_mode` setting: `never`, `a
 
 ---
 
+## Documentation Maintenance
+
+### What is auto-synced
+
+`scripts/sync-docs.sh` regenerates two sections in this file from Rust source. It runs automatically on every commit (lefthook pre-commit). You can also run it manually:
+
+```sh
+bash scripts/sync-docs.sh
+```
+
+| Sentinel | Source | What it tracks |
+|---|---|---|
+| `tauri-commands` | `src-tauri/src/*.rs` — all `#[tauri::command]` fns | Every command available via `invoke()` |
+| `settings` | `src-tauri/src/settings.rs` — `AppSettings` struct + `Default` impl | All settings keys, their Rust types, and default values |
+
+**Do not edit content between `<!-- sync:begin:* -->` and `<!-- sync:end:* -->` markers by hand.** Your changes will be overwritten on the next commit.
+
+### What agents must update manually
+
+When you make any of the following changes, update the relevant doc section before committing:
+
+| Change | Update |
+|---|---|
+| Add/remove a Rust module | `Repository Layout` tree in this file |
+| Add a new npm/pnpm script to `package.json` | `Dev Workflow → Useful scripts` in this file |
+| Change audio pipeline / WAV format requirements | `Common Pitfalls → Whisper audio requirements` |
+| Change Tauri capability scopes | `Common Pitfalls → Tauri capabilities` |
+| Add a new cross-package dependency | `Shared Packages` section |
+| Make an architectural decision | `.context/notes.md` — add a dated entry |
+| Discover a new footgun | `Common Pitfalls` |
+
+### .context/ is a living document
+
+Always append to `.context/notes.md` when you make a non-obvious architectural decision. Always update `.context/todos.md` when starting and finishing a task. These files are the primary handoff mechanism between agents.
+
+---
+
 ## Common Pitfalls
 
+- **Dev start:** Always use `bash dev.sh`, never `pnpm tauri:dev` directly — the latter skips the LLVM env setup that `whisper-rs`/`bindgen` requires
+- **LIBCLANG_PATH:** If you ever run `cargo` commands manually (e.g. `cargo check`, `cargo clippy`), export these first: `export LIBCLANG_PATH=$(brew --prefix llvm)/lib && export PATH=$(brew --prefix llvm)/bin:$PATH`
+- **Ollama must be running:** `dev.sh` guards this, but if you start the app another way and Ollama is down, summarization will silently fail at runtime
 - **Zod:** Always use Zod v3 — v4 breaks `@hookform/resolvers`
 - **pnpm only:** Never use npm or yarn. Never commit a `package-lock.json`
 - **Whisper audio requirements:** Input must be 16kHz mono F32 — `transcribe.rs` handles resampling, but raw cpal samples are F32/I16 mixed; check `audio.rs` before modifying capture logic

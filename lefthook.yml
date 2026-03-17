@@ -1,3 +1,9 @@
+pre-commit:
+  jobs:
+    - name: sync-docs
+      glob: "src-tauri/src/settings.rs\nsrc-tauri/src/*.rs"
+      run: bash scripts/sync-docs.sh && git add AGENT.md
+
 commit-msg:
   jobs:
     - name: commitlint
