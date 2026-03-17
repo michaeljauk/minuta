@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/nicehash/tauri/dev/crates/tauri-config-schema/schema.json",
+  "$schema": "https://schema.tauri.app/config/2",
   "productName": "Minuta",
   "version": "0.1.0",
   "identifier": "com.minuta.app",
@@ -10,7 +10,7 @@
     "frontendDist": "../apps/desktop/dist"
   },
   "app": {
-    "title": "Minuta",
+    "withGlobalTauri": true,
     "windows": [
       {
         "title": "Minuta",

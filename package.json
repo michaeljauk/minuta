@@ -15,6 +15,9 @@
     "tauri:build": "cd src-tauri && cargo tauri build"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
+    "lefthook": "^2.1.4",
     "turbo": "^2.5.0",
     "typescript": "^5.8.0"
   },
@@ -23,6 +26,9 @@
     "node": ">=20"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lefthook"
+    ]
   }
 }

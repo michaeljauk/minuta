@@ -1,5 +1,5 @@
 use std::path::PathBuf;
-use tauri::AppHandle;
+use tauri::{AppHandle, Manager};
 use whisper_rs::{FullParams, SamplingStrategy, WhisperContext, WhisperContextParameters};
 
 use crate::error::{AppError, Result};
@@ -29,7 +29,7 @@ pub async fn transcribe_audio(
         run_transcription(&audio_path, &model_path.to_string_lossy())
     })
     .await
-    .map_err(|e| AppError::Transcription(e.to_string()))?
+    .map_err(|e: tokio::task::JoinError| AppError::Transcription(e.to_string()))?
 }
 
 fn get_model_path(app: &AppHandle, model: &str) -> Result<PathBuf> {
@@ -74,7 +74,7 @@ fn run_transcription(audio_path: &str, model_path: &str) -> Result<Transcription
 
     let language = state
         .full_lang_id_from_state()
-        .map(|id| whisper_rs::get_lang_str(id).to_string())
+        .map(|id| whisper_rs::get_lang_str(id).unwrap_or("en").to_string())
         .unwrap_or_else(|_| "en".to_string());
 
     Ok(TranscriptionResult {

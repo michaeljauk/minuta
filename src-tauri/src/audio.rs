@@ -2,7 +2,7 @@ use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use hound::{WavSpec, WavWriter};
 use std::sync::{Arc, Mutex};
 use std::path::PathBuf;
-use tauri::AppHandle;
+use tauri::{AppHandle, Manager};
 
 use crate::error::{AppError, Result};
 use crate::state::AppState;
@@ -47,6 +47,11 @@ pub fn stop_recording(state: tauri::State<'_, AppState>) -> Result<String> {
     }
     rec.is_recording = false;
     let path = rec.audio_path.clone().unwrap_or_default();
+    // Signal the capture thread to stop
+    if !path.is_empty() {
+        let stop_file = format!("{path}.stop");
+        let _ = std::fs::write(&stop_file, b"");
+    }
     Ok(path)
 }
 

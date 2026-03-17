@@ -33,3 +33,6 @@ Thumbs.db
 src-tauri/target/
 src-tauri/WixTools/
 src-tauri/icons/icon.ico
+
+# Runtime output
+src-tauri/meetings/

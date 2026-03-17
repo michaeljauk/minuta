@@ -1,11 +1,11 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use minuta::audio::{start_recording, stop_recording};
-use minuta::settings::{load_settings, save_settings};
+use minuta::audio::*;
+use minuta::settings::*;
 use minuta::state::AppState;
-use minuta::summarize::summarize_transcript;
-use minuta::transcribe::transcribe_audio;
-use minuta::vault::save_note;
+use minuta::summarize::*;
+use minuta::transcribe::*;
+use minuta::vault::*;
 
 fn main() {
     tauri::Builder::default()
