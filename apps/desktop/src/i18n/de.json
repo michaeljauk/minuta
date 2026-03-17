@@ -11,7 +11,18 @@
     "stopRecording": "Aufnahme stoppen",
     "recentNotes": "Letzte Notizen",
     "noNotes": "Noch keine Besprechungen aufgezeichnet.",
-    "recording": "Aufnahme läuft..."
+    "recording": "Aufnahme läuft...",
+    "title": "Start",
+    "today": "Heute",
+    "noMeetingsYet": "Noch keine Besprechungen",
+    "noMeetingsDesc": "Drücke Aufnahme, um deine erste Besprechung aufzuzeichnen",
+    "record": "Aufnahme",
+    "processing": "Wird verarbeitet...",
+    "meetingTitle": "Besprechung"
+  },
+  "sidebar": {
+    "search": "Suchen...",
+    "recents": "Letzte"
   },
   "processing": {
     "transcribing": "Audio wird transkribiert...",
@@ -51,7 +62,12 @@
     "modelTiny": "tiny (schnell, weniger genau)",
     "modelBase": "base (empfohlen)",
     "modelSmall": "small (langsamer, genauer)",
-    "modelLargeV3": "large-v3 (am genauesten)"
+    "modelLargeV3": "large-v3 (am genauesten)",
+    "vault": "Vault",
+    "aiModels": "KI-Modelle",
+    "apiKeys": "API-Schlüssel",
+    "output": "Ausgabe",
+    "general": "Allgemein"
   },
   "errors": {
     "noVaultPath": "Bitte legen Sie Ihren Obsidian-Vault-Pfad in den Einstellungen fest.",

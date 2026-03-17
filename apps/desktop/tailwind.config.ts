@@ -39,6 +39,15 @@ const config: Config = {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
         },
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          border: "hsl(var(--sidebar-border))",
+        },
+        recording: {
+          DEFAULT: "hsl(var(--recording))",
+          foreground: "hsl(var(--recording-foreground))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

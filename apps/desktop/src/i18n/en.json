@@ -11,7 +11,18 @@
     "stopRecording": "Stop Recording",
     "recentNotes": "Recent Notes",
     "noNotes": "No meetings recorded yet.",
-    "recording": "Recording..."
+    "recording": "Recording...",
+    "title": "Home",
+    "today": "Today",
+    "noMeetingsYet": "No meetings yet",
+    "noMeetingsDesc": "Press Record to start capturing your first meeting",
+    "record": "Record",
+    "processing": "Processing...",
+    "meetingTitle": "Meeting"
+  },
+  "sidebar": {
+    "search": "Search...",
+    "recents": "Recents"
   },
   "processing": {
     "transcribing": "Transcribing audio...",
@@ -51,7 +62,12 @@
     "modelTiny": "tiny (fast, less accurate)",
     "modelBase": "base (recommended)",
     "modelSmall": "small (slower, more accurate)",
-    "modelLargeV3": "large-v3 (most accurate)"
+    "modelLargeV3": "large-v3 (most accurate)",
+    "vault": "Vault",
+    "aiModels": "AI Models",
+    "apiKeys": "API Keys",
+    "output": "Output",
+    "general": "General"
   },
   "errors": {
     "noVaultPath": "Please set your Obsidian vault path in Settings.",
