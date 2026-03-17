@@ -1,0 +1,5 @@
+{
+  "setup": "bash setup.sh",
+  "run": "bash dev.sh",
+  "archive": "export LIBCLANG_PATH=$(brew --prefix llvm)/lib && export PATH=$(brew --prefix llvm)/bin:$HOME/.cargo/bin:$PATH && pnpm --filter @minuta/desktop build && cd src-tauri && cargo tauri build"
+}
