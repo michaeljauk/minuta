@@ -19,7 +19,7 @@ jobs:
       js: ${{ steps.filter.outputs.js }}
       rust: ${{ steps.filter.outputs.rust }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: dorny/paths-filter@v3
         id: filter
@@ -48,7 +48,7 @@ jobs:
     if: github.event.pull_request.draft == false && needs.detect-changes.outputs.js == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v4
 
@@ -68,7 +68,7 @@ jobs:
     if: github.event.pull_request.draft == false && needs.detect-changes.outputs.js == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v4
 
@@ -87,7 +87,7 @@ jobs:
     if: github.event.pull_request.draft == false && needs.detect-changes.outputs.js == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v4
 
@@ -106,7 +106,7 @@ jobs:
     if: github.event.pull_request.draft == false && needs.detect-changes.outputs.rust == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install system dependencies
         run: |
