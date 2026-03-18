@@ -73,7 +73,7 @@ fn capture_audio(output_path: String, done_tx: mpsc::Sender<()>) -> std::result:
         .ok_or("No input device available")?;
 
     let config = device.default_input_config()?;
-    let sample_rate = config.sample_rate().0;
+    let sample_rate = config.sample_rate();
     let channels = config.channels();
 
     let spec = WavSpec {
