@@ -12,9 +12,40 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  detect-changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      js: ${{ steps.filter.outputs.js }}
+      rust: ${{ steps.filter.outputs.rust }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            js:
+              - 'apps/**'
+              - 'packages/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'turbo.json'
+              - 'tsconfig.base.json'
+              - 'biome.json'
+              - '.github/workflows/ci.yml'
+            rust:
+              - 'src-tauri/**'
+              - 'Cargo.toml'
+              - 'Cargo.lock'
+              - 'build.rs'
+              - '.github/workflows/ci.yml'
+
   lint:
     name: Lint & Format
-    if: github.event.pull_request.draft == false
+    needs: detect-changes
+    if: github.event.pull_request.draft == false && needs.detect-changes.outputs.js == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -33,7 +64,8 @@ jobs:
 
   typecheck:
     name: Typecheck
-    if: github.event.pull_request.draft == false
+    needs: detect-changes
+    if: github.event.pull_request.draft == false && needs.detect-changes.outputs.js == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -51,7 +83,8 @@ jobs:
 
   test-js:
     name: JS Tests (Vitest)
-    if: github.event.pull_request.draft == false
+    needs: detect-changes
+    if: github.event.pull_request.draft == false && needs.detect-changes.outputs.js == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -69,7 +102,8 @@ jobs:
 
   test-rust:
     name: Rust Tests
-    if: github.event.pull_request.draft == false
+    needs: detect-changes
+    if: github.event.pull_request.draft == false && needs.detect-changes.outputs.rust == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
