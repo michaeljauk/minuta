@@ -4,6 +4,7 @@ use std::fs;
 use std::path::PathBuf;
 
 use crate::error::{AppError, Result};
+use crate::settings::{Connectors, ObsidianConnector};
 
 #[derive(Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -14,22 +15,22 @@ pub struct NoteMetadata {
     pub duration_minutes: u32,
     pub file_path: String,
     pub relative_path: String,
-    pub vault_name: String,
+    pub storage_name: String,
 }
 
 #[tauri::command]
-pub fn list_notes(vault_path: String, output_folder: String) -> Result<Vec<NoteMetadata>> {
-    let vault = PathBuf::from(&vault_path);
-    let output_dir = vault.join(&output_folder);
+pub fn list_notes(storage_dir: String, output_folder: String) -> Result<Vec<NoteMetadata>> {
+    let storage = PathBuf::from(&storage_dir);
+    let output_dir = storage.join(&output_folder);
 
     if !output_dir.exists() {
         return Ok(Vec::new());
     }
 
-    let vault_name = vault
+    let storage_name = storage
         .file_name()
         .map(|n| n.to_string_lossy().to_string())
-        .unwrap_or_else(|| "vault".to_string());
+        .unwrap_or_else(|| "Minuta".to_string());
 
     let mut notes: Vec<NoteMetadata> = Vec::new();
 
@@ -38,7 +39,7 @@ pub fn list_notes(vault_path: String, output_folder: String) -> Result<Vec<NoteM
         let entry = entry.map_err(|e| AppError::Vault(e.to_string()))?;
         let path = entry.path();
         if path.extension().is_some_and(|ext| ext == "md") {
-            if let Some(meta) = parse_note_frontmatter(&path, &output_folder, &vault_name) {
+            if let Some(meta) = parse_note_frontmatter(&path, &output_folder, &storage_name) {
                 notes.push(meta);
             }
         }
@@ -63,7 +64,7 @@ pub fn delete_note(file_path: String) -> Result<()> {
 fn parse_note_frontmatter(
     path: &PathBuf,
     output_folder: &str,
-    vault_name: &str,
+    storage_name: &str,
 ) -> Option<NoteMetadata> {
     let content = fs::read_to_string(path).ok()?;
 
@@ -108,13 +109,13 @@ fn parse_note_frontmatter(
         duration_minutes,
         file_path,
         relative_path,
-        vault_name: vault_name.to_string(),
+        storage_name: storage_name.to_string(),
     })
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SaveNoteRequest {
-    pub vault_path: String,
+    pub storage_dir: String,
     pub output_folder: String,
     pub title: String,
     pub summary: String,
@@ -123,13 +124,15 @@ pub struct SaveNoteRequest {
     pub duration_minutes: u32,
     pub wikilink_attendees: bool,
     pub transcript_mode: String,
+    pub connectors: Connectors,
 }
 
 #[derive(Debug, Serialize)]
 pub struct SaveNoteResult {
     pub file_path: String,
-    pub vault_name: String,
+    pub storage_name: String,
     pub relative_path: String,
+    pub connector_warnings: Vec<String>,
 }
 
 #[tauri::command]
@@ -142,8 +145,8 @@ pub fn save_note(request: SaveNoteRequest) -> Result<SaveNoteResult> {
     let safe_title = sanitize_filename(&request.title);
     let filename = format!("{date_str}_{filename_time}_{safe_title}.md");
 
-    let vault_path = PathBuf::from(&request.vault_path);
-    let output_dir = vault_path.join(&request.output_folder);
+    let storage_path = PathBuf::from(&request.storage_dir);
+    let output_dir = storage_path.join(&request.output_folder);
     fs::create_dir_all(&output_dir).map_err(|e| AppError::Vault(e.to_string()))?;
 
     let file_path = output_dir.join(&filename);
@@ -151,18 +154,48 @@ pub fn save_note(request: SaveNoteRequest) -> Result<SaveNoteResult> {
 
     let content = build_note_content(&request, &date_str, &time_str);
 
-    fs::write(&file_path, content).map_err(|e| AppError::Vault(e.to_string()))?;
+    fs::write(&file_path, &content).map_err(|e| AppError::Vault(e.to_string()))?;
 
-    let vault_name = vault_path
+    let storage_name = storage_path
         .file_name()
         .map(|n| n.to_string_lossy().to_string())
-        .unwrap_or_else(|| "vault".to_string());
+        .unwrap_or_else(|| "Minuta".to_string());
+
+    // Sync to connectors — never fail the command
+    let mut connector_warnings: Vec<String> = Vec::new();
+
+    if let Some(ref obsidian) = request.connectors.obsidian {
+        if obsidian.enabled {
+            if let Err(warning) = sync_obsidian(&file_path, &filename, obsidian) {
+                connector_warnings.push(warning);
+            }
+        }
+    }
 
     Ok(SaveNoteResult {
         file_path: file_path.to_string_lossy().to_string(),
-        vault_name,
+        storage_name,
         relative_path,
+        connector_warnings,
     })
+}
+
+fn sync_obsidian(
+    source_path: &PathBuf,
+    filename: &str,
+    connector: &ObsidianConnector,
+) -> std::result::Result<(), String> {
+    let vault_path = PathBuf::from(&connector.vault_path);
+    let output_dir = vault_path.join(&connector.output_folder);
+
+    fs::create_dir_all(&output_dir)
+        .map_err(|e| format!("Obsidian: failed to create output directory: {e}"))?;
+
+    let dest = output_dir.join(filename);
+    fs::copy(source_path, &dest)
+        .map_err(|e| format!("Obsidian: failed to copy note: {e}"))?;
+
+    Ok(())
 }
 
 fn build_note_content(req: &SaveNoteRequest, date: &str, time: &str) -> String {

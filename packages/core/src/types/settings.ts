@@ -6,8 +6,18 @@ export type AppLanguage = "en" | "de";
 
 export type AppTheme = "system" | "light" | "dark";
 
-export interface AppSettings {
+export interface ObsidianConnector {
+  enabled: boolean;
   vaultPath: string;
+  outputFolder: string;
+}
+
+export interface Connectors {
+  obsidian?: ObsidianConnector;
+}
+
+export interface AppSettings {
+  storageDir: string;
   outputFolder: string;
   whisperModel: WhisperModel;
   ollamaBaseUrl: string;
@@ -18,10 +28,11 @@ export interface AppSettings {
   transcriptMode: TranscriptMode;
   language: AppLanguage;
   theme: AppTheme;
+  connectors: Connectors;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
-  vaultPath: "",
+  storageDir: "",
   outputFolder: "meetings",
   whisperModel: "base",
   ollamaBaseUrl: "http://localhost:11434",
@@ -30,4 +41,5 @@ export const DEFAULT_SETTINGS: AppSettings = {
   transcriptMode: "collapsed",
   language: "en",
   theme: "light",
+  connectors: {},
 };

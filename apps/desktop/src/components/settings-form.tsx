@@ -23,9 +23,41 @@ export function SettingsForm() {
 
   const update = (patch: Partial<AppSettings>) => setLocal((s) => ({ ...s, ...patch }));
 
-  const browseVault = async () => {
+  const browseStorage = async () => {
     const selected = await open({ directory: true, multiple: false });
-    if (typeof selected === "string") update({ vaultPath: selected });
+    if (typeof selected === "string") update({ storageDir: selected });
+  };
+
+  const browseObsidian = async () => {
+    const selected = await open({ directory: true, multiple: false });
+    if (typeof selected === "string") {
+      setLocal((s) => ({
+        ...s,
+        connectors: {
+          ...s.connectors,
+          obsidian: {
+            enabled: s.connectors.obsidian?.enabled ?? true,
+            vaultPath: selected,
+            outputFolder: s.connectors.obsidian?.outputFolder ?? "meetings",
+          },
+        },
+      }));
+    }
+  };
+
+  const updateObsidian = (patch: Partial<NonNullable<AppSettings["connectors"]["obsidian"]>>) => {
+    setLocal((s) => ({
+      ...s,
+      connectors: {
+        ...s.connectors,
+        obsidian: {
+          enabled: s.connectors.obsidian?.enabled ?? false,
+          vaultPath: s.connectors.obsidian?.vaultPath ?? "",
+          outputFolder: s.connectors.obsidian?.outputFolder ?? "meetings",
+          ...patch,
+        },
+      },
+    }));
   };
 
   const handleSave = async () => {
@@ -37,18 +69,18 @@ export function SettingsForm() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Vault */}
+      {/* Storage */}
       <div className="rounded-xl border border-border bg-card p-6 flex flex-col gap-4">
-        <h2 className="text-sm font-semibold text-foreground">{t("settings.vault")}</h2>
+        <h2 className="text-sm font-semibold text-foreground">{t("settings.storage")}</h2>
         <div className="flex flex-col gap-2">
-          <Label>{t("settings.vaultPath")}</Label>
+          <Label>{t("settings.storageDir")}</Label>
           <div className="flex gap-2">
             <Input
-              value={local.vaultPath}
-              onChange={(e) => update({ vaultPath: e.target.value })}
-              placeholder={t("settings.vaultPathPlaceholder")}
+              value={local.storageDir}
+              onChange={(e) => update({ storageDir: e.target.value })}
+              placeholder={t("settings.storageDirPlaceholder")}
             />
-            <Button variant="outline" onClick={browseVault}>
+            <Button variant="outline" onClick={browseStorage}>
               {t("settings.browse")}
             </Button>
           </div>
@@ -60,6 +92,50 @@ export function SettingsForm() {
             onChange={(e) => update({ outputFolder: e.target.value })}
             placeholder={t("settings.outputFolderPlaceholder")}
           />
+        </div>
+      </div>
+
+      {/* Connectors */}
+      <div className="rounded-xl border border-border bg-card p-6 flex flex-col gap-4">
+        <h2 className="text-sm font-semibold text-foreground">{t("settings.connectors")}</h2>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <Label>{t("settings.connectorObsidian")}</Label>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {t("settings.connectorObsidianDesc")}
+              </p>
+            </div>
+            <Switch
+              checked={local.connectors.obsidian?.enabled ?? false}
+              onCheckedChange={(v) => updateObsidian({ enabled: v })}
+            />
+          </div>
+          {local.connectors.obsidian?.enabled && (
+            <div className="flex flex-col gap-3 pl-1 border-l-2 border-border ml-1">
+              <div className="flex flex-col gap-2 pl-3">
+                <Label>{t("settings.connectorObsidianPath")}</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={local.connectors.obsidian?.vaultPath ?? ""}
+                    onChange={(e) => updateObsidian({ vaultPath: e.target.value })}
+                    placeholder={t("settings.connectorObsidianPathPlaceholder")}
+                  />
+                  <Button variant="outline" onClick={browseObsidian}>
+                    {t("settings.browse")}
+                  </Button>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2 pl-3">
+                <Label>{t("settings.connectorObsidianFolder")}</Label>
+                <Input
+                  value={local.connectors.obsidian?.outputFolder ?? "meetings"}
+                  onChange={(e) => updateObsidian({ outputFolder: e.target.value })}
+                  placeholder={t("settings.outputFolderPlaceholder")}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

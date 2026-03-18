@@ -11,21 +11,21 @@ export function useNotes() {
   const [isLoading, setIsLoading] = useState(true);
 
   const refresh = useCallback(async () => {
-    if (!settings.vaultPath) {
+    if (!settings.storageDir) {
       setNotes([]);
       setIsLoading(false);
       return;
     }
     try {
       setIsLoading(true);
-      const result = await tauriCommands.listNotes(settings.vaultPath, settings.outputFolder);
+      const result = await tauriCommands.listNotes(settings.storageDir, settings.outputFolder);
       setNotes(result);
     } catch {
       setNotes([]);
     } finally {
       setIsLoading(false);
     }
-  }, [settings.vaultPath, settings.outputFolder]);
+  }, [settings.storageDir, settings.outputFolder]);
 
   useEffect(() => {
     if (!settingsLoading) {
