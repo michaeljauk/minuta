@@ -2,17 +2,25 @@ import { Button } from "@minuta/ui";
 import { open } from "@tauri-apps/plugin-shell";
 import { ExternalLink } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useSettings } from "../context/settings-context";
 import type { SaveNoteResult } from "../lib/tauri-commands";
 
 interface NotePreviewProps {
   note: SaveNoteResult;
+  syncWarning?: string | null;
 }
 
-export function NotePreview({ note }: NotePreviewProps) {
+export function NotePreview({ note, syncWarning }: NotePreviewProps) {
   const { t } = useTranslation();
+  const { settings } = useSettings();
+
+  const obsidianConnector = settings.connectors.obsidian;
+  const obsidianEnabled = obsidianConnector?.enabled && obsidianConnector?.vaultPath;
 
   const openInObsidian = async () => {
-    const encodedVault = encodeURIComponent(note.vault_name);
+    if (!obsidianConnector?.vaultPath) return;
+    const vaultName = obsidianConnector.vaultPath.split("/").pop() ?? "vault";
+    const encodedVault = encodeURIComponent(vaultName);
     const encodedFile = encodeURIComponent(note.relative_path);
     const uri = `obsidian://open?vault=${encodedVault}&file=${encodedFile}`;
     await open(uri);
@@ -24,10 +32,17 @@ export function NotePreview({ note }: NotePreviewProps) {
         <p className="font-medium text-foreground truncate">{note.relative_path}</p>
         <p className="text-muted-foreground mt-1 text-xs truncate">{note.file_path}</p>
       </div>
-      <Button onClick={openInObsidian} className="gap-2">
-        <ExternalLink className="h-4 w-4" />
-        {t("note.openInObsidian")}
-      </Button>
+      {syncWarning && (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950 p-3 text-xs text-amber-800 dark:text-amber-200 w-full max-w-md">
+          {syncWarning}
+        </div>
+      )}
+      {obsidianEnabled && (
+        <Button onClick={openInObsidian} className="gap-2">
+          <ExternalLink className="h-4 w-4" />
+          {t("note.openInObsidian")}
+        </Button>
+      )}
     </div>
   );
 }

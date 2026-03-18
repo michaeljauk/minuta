@@ -1,4 +1,4 @@
-import type { AppSettings } from "@minuta/core";
+import type { AppSettings, Connectors } from "@minuta/core";
 import { invoke } from "@tauri-apps/api/core";
 
 export interface TranscriptionResult {
@@ -7,7 +7,7 @@ export interface TranscriptionResult {
 }
 
 export interface SaveNoteRequest {
-  vault_path: string;
+  storage_dir: string;
   output_folder: string;
   title: string;
   summary: string;
@@ -16,12 +16,14 @@ export interface SaveNoteRequest {
   duration_minutes: number;
   wikilink_attendees: boolean;
   transcript_mode: string;
+  connectors: Connectors;
 }
 
 export interface SaveNoteResult {
   file_path: string;
-  vault_name: string;
+  storage_name: string;
   relative_path: string;
+  connector_warnings: string[];
 }
 
 export interface NoteMetadata {
@@ -31,7 +33,7 @@ export interface NoteMetadata {
   durationMinutes: number;
   filePath: string;
   relativePath: string;
-  vaultName: string;
+  storageName: string;
 }
 
 export const tauriCommands = {
@@ -52,8 +54,8 @@ export const tauriCommands = {
 
   saveNote: (request: SaveNoteRequest): Promise<SaveNoteResult> => invoke("save_note", { request }),
 
-  listNotes: (vaultPath: string, outputFolder: string): Promise<NoteMetadata[]> =>
-    invoke("list_notes", { vaultPath, outputFolder }),
+  listNotes: (storageDir: string, outputFolder: string): Promise<NoteMetadata[]> =>
+    invoke("list_notes", { storageDir, outputFolder }),
 
   readNote: (filePath: string): Promise<string> => invoke("read_note", { filePath }),
 

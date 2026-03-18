@@ -10,6 +10,7 @@ export function useMeetingFlow() {
   const [duration, setDuration] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [savedNote, setSavedNote] = useState<SaveNoteResult | null>(null);
+  const [syncWarning, setSyncWarning] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<number>(0);
   const isProcessingRef = useRef(false);
@@ -17,6 +18,7 @@ export function useMeetingFlow() {
   const startRecording = async () => {
     try {
       setError(null);
+      setSyncWarning(null);
       setStatus("recording");
       setDuration(0);
       startTimeRef.current = Date.now();
@@ -63,7 +65,7 @@ export function useMeetingFlow() {
       // Save
       setStatus("saving");
       const result = await tauriCommands.saveNote({
-        vault_path: settings.vaultPath,
+        storage_dir: settings.storageDir,
         output_folder: settings.outputFolder,
         title,
         summary,
@@ -72,7 +74,12 @@ export function useMeetingFlow() {
         duration_minutes: Math.round(durationSeconds / 60),
         wikilink_attendees: settings.wikilinkAttendees,
         transcript_mode: settings.transcriptMode,
+        connectors: settings.connectors,
       });
+
+      if (result.connector_warnings.length > 0) {
+        setSyncWarning(result.connector_warnings.join("; "));
+      }
 
       setSavedNote(result);
       setStatus("completed");
@@ -88,6 +95,7 @@ export function useMeetingFlow() {
     setStatus("idle");
     setError(null);
     setSavedNote(null);
+    setSyncWarning(null);
     setDuration(0);
   };
 
@@ -96,6 +104,7 @@ export function useMeetingFlow() {
     duration,
     error,
     savedNote,
+    syncWarning,
     startRecording,
     stopAndProcess,
     reset,

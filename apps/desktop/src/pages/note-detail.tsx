@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useSettings } from "../context/settings-context";
 import type { NoteMetadata } from "../lib/tauri-commands";
 import { tauriCommands } from "../lib/tauri-commands";
 
@@ -16,10 +17,14 @@ interface NoteDetailPageProps {
 
 export function NoteDetailPage({ note, onBack, onDeleted }: NoteDetailPageProps) {
   const { t } = useTranslation();
+  const { settings } = useSettings();
   const [content, setContent] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const obsidianConnector = settings.connectors.obsidian;
+  const obsidianEnabled = obsidianConnector?.enabled && obsidianConnector?.vaultPath;
 
   useEffect(() => {
     setIsLoading(true);
@@ -31,11 +36,13 @@ export function NoteDetailPage({ note, onBack, onDeleted }: NoteDetailPageProps)
   }, [note.filePath]);
 
   const openInObsidian = useCallback(async () => {
-    const encodedVault = encodeURIComponent(note.vaultName);
+    if (!obsidianConnector?.vaultPath) return;
+    const vaultName = obsidianConnector.vaultPath.split("/").pop() ?? "vault";
+    const encodedVault = encodeURIComponent(vaultName);
     const encodedFile = encodeURIComponent(note.relativePath);
     const uri = `obsidian://open?vault=${encodedVault}&file=${encodedFile}`;
     await open(uri);
-  }, [note.vaultName, note.relativePath]);
+  }, [obsidianConnector?.vaultPath, note.relativePath]);
 
   const copyTranscript = useCallback(async () => {
     if (!content) return;
@@ -103,10 +110,12 @@ export function NoteDetailPage({ note, onBack, onDeleted }: NoteDetailPageProps)
 
           {/* Actions */}
           <div className="flex flex-wrap gap-2 mb-6">
-            <Button variant="outline" size="sm" onClick={openInObsidian} className="gap-1.5">
-              <ExternalLink className="h-3.5 w-3.5" />
-              {t("note.openInObsidian")}
-            </Button>
+            {obsidianEnabled && (
+              <Button variant="outline" size="sm" onClick={openInObsidian} className="gap-1.5">
+                <ExternalLink className="h-3.5 w-3.5" />
+                {t("note.openInObsidian")}
+              </Button>
+            )}
             <Button variant="outline" size="sm" onClick={copyTranscript} className="gap-1.5">
               <Copy className="h-3.5 w-3.5" />
               {copied ? t("noteDetail.copied") : t("noteDetail.copyTranscript")}

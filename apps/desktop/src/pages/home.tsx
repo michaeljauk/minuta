@@ -16,7 +16,7 @@ interface HomePageProps {
 
 export function HomePage({ notes, isLoading, meetingFlow, onSelectNote }: HomePageProps) {
   const { t } = useTranslation();
-  const { status, duration, error, savedNote, reset } = meetingFlow;
+  const { status, duration, error, savedNote, syncWarning, reset } = meetingFlow;
   const [meetingTitle, setMeetingTitle] = useState(t("home.meetingTitle"));
 
   const isRecording = status === "recording";
@@ -45,7 +45,7 @@ export function HomePage({ notes, isLoading, meetingFlow, onSelectNote }: HomePa
             <p className="text-sm font-medium text-green-600 dark:text-green-400">
               {t("processing.completed")}
             </p>
-            <NotePreview note={savedNote} />
+            <NotePreview note={savedNote} syncWarning={syncWarning} />
             <button
               type="button"
               onClick={() => {
