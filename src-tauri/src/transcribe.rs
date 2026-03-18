@@ -59,23 +59,19 @@ fn run_transcription(audio_path: &str, model_path: &str) -> Result<Transcription
         .full(params, &audio_data)
         .map_err(|e| AppError::Transcription(format!("Transcription failed: {e}")))?;
 
-    let num_segments = state
-        .full_n_segments()
-        .map_err(|e| AppError::Transcription(e.to_string()))?;
+    let num_segments = state.full_n_segments();
 
     let mut text = String::new();
     for i in 0..num_segments {
-        let segment = state
-            .full_get_segment_text(i)
-            .map_err(|e| AppError::Transcription(e.to_string()))?;
-        text.push_str(&segment);
-        text.push(' ');
+        if let Some(segment) = state.get_segment(i) {
+            text.push_str(&segment.to_str_lossy());
+            text.push(' ');
+        }
     }
 
-    let language = state
-        .full_lang_id_from_state()
-        .map(|id| whisper_rs::get_lang_str(id).unwrap_or("en").to_string())
-        .unwrap_or_else(|_| "en".to_string());
+    let language = whisper_rs::get_lang_str(state.full_lang_id_from_state())
+        .unwrap_or("en")
+        .to_string();
 
     Ok(TranscriptionResult {
         text: text.trim().to_string(),
