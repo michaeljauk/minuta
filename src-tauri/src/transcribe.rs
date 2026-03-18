@@ -64,8 +64,10 @@ fn run_transcription(audio_path: &str, model_path: &str) -> Result<Transcription
     let mut text = String::new();
     for i in 0..num_segments {
         if let Some(segment) = state.get_segment(i) {
-            text.push_str(&segment.to_str_lossy());
-            text.push(' ');
+            if let Ok(s) = segment.to_str_lossy() {
+                text.push_str(&s);
+                text.push(' ');
+            }
         }
     }
 
