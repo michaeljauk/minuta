@@ -19,8 +19,8 @@
     "tauri:build": "cd src-tauri && cargo tauri build"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.7",
-    "vitest": "^3.0.0",
+    "@biomejs/biome": "^2.4.8",
+    "vitest": "^4.1.0",
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
     "lefthook": "^2.1.4",
