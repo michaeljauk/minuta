@@ -87,7 +87,24 @@
     "theme": "Design",
     "themeLight": "Hell",
     "themeDark": "Dunkel",
-    "themeSystem": "System"
+    "themeSystem": "System",
+    "recording": "Aufnahme",
+    "audioSource": "Audioquelle",
+    "audioSourceMic": "Nur Mikrofon",
+    "audioSourceSystem": "Nur Systemaudio",
+    "audioSourceBoth": "Beides (Mikrofon + Systemaudio)",
+    "audioSourceHelp": "Systemaudio-Aufnahme erfordert bei der ersten Nutzung eine Berechtigung",
+    "transcriptionMode": "Transkriptionsmodus",
+    "transcriptionModeRealtime": "Echtzeit (Live-Transkript während der Aufnahme)",
+    "transcriptionModeBatch": "Nachträglich (nach der Aufnahme transkribieren)",
+    "transcriptionModeHelp": "Echtzeit zeigt ein Live-Transkript, benötigt aber mehr CPU"
+  },
+  "recording": {
+    "sourceMic": "Mikrofon",
+    "sourceSystem": "System",
+    "sourceBoth": "Mikrofon + System",
+    "systemAudioFallback": "Systemaudio nicht verfügbar — nur Mikrofon wird aufgenommen",
+    "liveTranscript": "Live-Transkript"
   },
   "errors": {
     "noStorageDir": "Bitte legen Sie Ihren Speicherort in den Einstellungen fest.",

@@ -9,8 +9,10 @@ export type {
   AppLanguage,
   AppSettings,
   AppTheme,
+  AudioSource,
   Connectors,
   ObsidianConnector,
+  TranscriptionMode,
   WhisperModel,
 } from "./settings";
 export { DEFAULT_SETTINGS } from "./settings";

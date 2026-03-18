@@ -139,6 +139,46 @@ export function SettingsForm() {
         </div>
       </div>
 
+      {/* Recording */}
+      <div className="rounded-xl border border-border bg-card p-6 flex flex-col gap-4">
+        <h2 className="text-sm font-semibold text-foreground">{t("settings.recording")}</h2>
+        <div className="flex flex-col gap-2">
+          <Label>{t("settings.audioSource")}</Label>
+          <Select
+            value={local.audioSource}
+            onValueChange={(v) => update({ audioSource: v as AppSettings["audioSource"] })}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="mic">{t("settings.audioSourceMic")}</SelectItem>
+              <SelectItem value="system">{t("settings.audioSourceSystem")}</SelectItem>
+              <SelectItem value="both">{t("settings.audioSourceBoth")}</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">{t("settings.audioSourceHelp")}</p>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label>{t("settings.transcriptionMode")}</Label>
+          <Select
+            value={local.transcriptionMode}
+            onValueChange={(v) =>
+              update({ transcriptionMode: v as AppSettings["transcriptionMode"] })
+            }
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="realtime">{t("settings.transcriptionModeRealtime")}</SelectItem>
+              <SelectItem value="batch">{t("settings.transcriptionModeBatch")}</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">{t("settings.transcriptionModeHelp")}</p>
+        </div>
+      </div>
+
       {/* AI Models */}
       <div className="rounded-xl border border-border bg-card p-6 flex flex-col gap-4">
         <h2 className="text-sm font-semibold text-foreground">{t("settings.aiModels")}</h2>

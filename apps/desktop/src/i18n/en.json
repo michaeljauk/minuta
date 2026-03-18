@@ -87,7 +87,24 @@
     "theme": "Theme",
     "themeLight": "Light",
     "themeDark": "Dark",
-    "themeSystem": "System"
+    "themeSystem": "System",
+    "recording": "Recording",
+    "audioSource": "Audio Source",
+    "audioSourceMic": "Microphone only",
+    "audioSourceSystem": "System audio only",
+    "audioSourceBoth": "Both (mic + system audio)",
+    "audioSourceHelp": "System audio capture requires permission on first use",
+    "transcriptionMode": "Transcription Mode",
+    "transcriptionModeRealtime": "Real-time (live transcript during recording)",
+    "transcriptionModeBatch": "Batch (transcribe after recording)",
+    "transcriptionModeHelp": "Real-time shows a live transcript but uses more CPU"
+  },
+  "recording": {
+    "sourceMic": "Mic",
+    "sourceSystem": "System",
+    "sourceBoth": "Mic + System",
+    "systemAudioFallback": "System audio unavailable — recording mic only",
+    "liveTranscript": "Live Transcript"
   },
   "errors": {
     "noStorageDir": "Please set your storage location in Settings.",

@@ -1,5 +1,7 @@
 pub mod audio;
 pub mod error;
+pub mod loopback;
+pub mod mixer;
 pub mod settings;
 pub mod state;
 pub mod summarize;

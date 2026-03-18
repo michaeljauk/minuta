@@ -16,6 +16,10 @@ export interface Connectors {
   obsidian?: ObsidianConnector;
 }
 
+export type AudioSource = "mic" | "system" | "both";
+
+export type TranscriptionMode = "realtime" | "batch";
+
 export interface AppSettings {
   storageDir: string;
   outputFolder: string;
@@ -29,6 +33,8 @@ export interface AppSettings {
   language: AppLanguage;
   theme: AppTheme;
   connectors: Connectors;
+  audioSource: AudioSource;
+  transcriptionMode: TranscriptionMode;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -42,4 +48,6 @@ export const DEFAULT_SETTINGS: AppSettings = {
   language: "en",
   theme: "light",
   connectors: {},
+  audioSource: "mic",
+  transcriptionMode: "realtime",
 };

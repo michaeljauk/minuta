@@ -26,6 +26,18 @@ export interface SaveNoteResult {
   connector_warnings: string[];
 }
 
+export interface StopRecordingResult {
+  audio_path: string;
+  transcript: TranscriptionResult | null;
+}
+
+export interface TranscriptSegment {
+  text: string;
+  start_ms: number;
+  end_ms: number;
+  is_partial: boolean;
+}
+
 export interface NoteMetadata {
   title: string;
   date: string;
@@ -37,9 +49,13 @@ export interface NoteMetadata {
 }
 
 export const tauriCommands = {
-  startRecording: (): Promise<string> => invoke("start_recording"),
+  startRecording: (
+    audioSource?: string,
+    transcriptionMode?: string,
+    whisperModel?: string,
+  ): Promise<string> => invoke("start_recording", { audioSource, transcriptionMode, whisperModel }),
 
-  stopRecording: (): Promise<string> => invoke("stop_recording"),
+  stopRecording: (): Promise<StopRecordingResult> => invoke("stop_recording"),
 
   transcribeAudio: (audioPath: string, model: string): Promise<TranscriptionResult> =>
     invoke("transcribe_audio", { audioPath, model }),

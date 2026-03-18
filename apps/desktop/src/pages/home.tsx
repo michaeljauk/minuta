@@ -4,6 +4,7 @@ import { EmptyState } from "../components/empty-state";
 import { MeetingList } from "../components/meeting-list";
 import { NotePreview } from "../components/note-preview";
 import { RecordingCard } from "../components/recording-card";
+import { useSettings } from "../context/settings-context";
 import type { useMeetingFlow } from "../hooks/use-meeting-flow";
 import type { NoteMetadata } from "../lib/tauri-commands";
 
@@ -16,7 +17,8 @@ interface HomePageProps {
 
 export function HomePage({ notes, isLoading, meetingFlow, onSelectNote }: HomePageProps) {
   const { t } = useTranslation();
-  const { status, duration, error, savedNote, syncWarning, reset } = meetingFlow;
+  const { settings } = useSettings();
+  const { status, duration, error, savedNote, syncWarning, liveSegments, reset } = meetingFlow;
   const [meetingTitle, setMeetingTitle] = useState(t("home.meetingTitle"));
 
   const isRecording = status === "recording";
@@ -33,6 +35,8 @@ export function HomePage({ notes, isLoading, meetingFlow, onSelectNote }: HomePa
           status={status}
           duration={duration}
           meetingTitle={meetingTitle}
+          audioSource={settings.audioSource}
+          liveSegments={liveSegments}
           onTitleChange={setMeetingTitle}
           onStop={() => meetingFlow.stopAndProcess(meetingTitle)}
         />
