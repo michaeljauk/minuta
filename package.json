@@ -24,7 +24,7 @@
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
     "lefthook": "^2.1.4",
-    "turbo": "^2.5.0",
+    "turbo": "^2.8.20",
     "typescript": "^5.8.0"
   },
   "packageManager": "pnpm@10.29.3",
